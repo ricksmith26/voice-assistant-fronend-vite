@@ -7,8 +7,9 @@ import {
   VoiceAssistantControlBar,
   AgentState,
   DisconnectButton,
+  VideoConference
 } from "@livekit/components-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MediaDeviceFailure } from "livekit-client";
 import { NoAgentNotification } from "../components/NoAgentNotification";
 import { CloseIcon } from "../components/CloseIcon";
@@ -22,7 +23,7 @@ export type ConnectionDetails = {
   participantToken: string;
 };
 
-export default function Winston() {
+export default function Winston({ mode }: any) {
   const [connectionDetails, updateConnectionDetails] = useState<
     ConnectionDetails | undefined
   >(undefined);
@@ -30,7 +31,7 @@ export default function Winston() {
 
   const onConnectButtonClicked = useCallback(async () => {
     try {
-      console.log(import.meta.env.VITE_NEXT_PUBLIC_CONN_DETAILS_ENDPOINT , '<<<<<')
+      console.log(import.meta.env.VITE_NEXT_PUBLIC_CONN_DETAILS_ENDPOINT, '<<<<<')
       const url = new URL(
         import.meta.env.VITE_NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? "/api/connection-details",
         window.location.origin
@@ -48,27 +49,36 @@ export default function Winston() {
     }
   }, []);
 
+  useEffect(() => {
+    console.log(mode, '<<<<<<mode<<')
+    if (mode === 'winston') {
+      onConnectButtonClicked()
+    } else {
+
+    }
+  }, [mode])
+
   return (
-    <main className="h-full grid content-center bg-[var(--lk-bg)]">
-      <LiveKitRoom
-        token={connectionDetails?.participantToken}
-        serverUrl={connectionDetails?.serverUrl}
-        connect={!!connectionDetails}
-        audio={true}
-        video={{ facingMode: "user" }}
-        onMediaDeviceFailure={onDeviceFailure}
-        onDisconnected={() => updateConnectionDetails(undefined)}
-        className="grid grid-rows-[2fr_1fr] items-center"
-      >
-        <SimpleVoiceAssistant onStateChange={setAgentState} />
-        <ControlBar
-          onConnectButtonClicked={onConnectButtonClicked}
-          agentState={agentState}
-        />
-        <RoomAudioRenderer />
-        <NoAgentNotification state={agentState} />
-      </LiveKitRoom>
-    </main>
+    // <main className="h-full grid content-center bg-[var(--lk-bg)]">
+    <LiveKitRoom
+      token={connectionDetails?.participantToken}
+      serverUrl={connectionDetails?.serverUrl}
+      connect={!!connectionDetails}
+      audio={true}
+      video={{ facingMode: "user" }}
+      onMediaDeviceFailure={onDeviceFailure}
+      onDisconnected={() => updateConnectionDetails(undefined)}
+      className="grid grid-rows-[2fr_1fr] items-center"
+    >
+      <SimpleVoiceAssistant onStateChange={setAgentState} />
+      <ControlBar
+        onConnectButtonClicked={onConnectButtonClicked}
+        agentState={agentState}
+      />
+      <RoomAudioRenderer />
+      <NoAgentNotification state={agentState} />
+    </LiveKitRoom>
+    // </main>
   );
 }
 
