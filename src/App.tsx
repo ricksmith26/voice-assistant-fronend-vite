@@ -3,6 +3,7 @@ import './App.css'
 import Winston from './winston/page'
 import useSpeechToText from 'react-hook-speech-to-text';
 import CustomCarousel from './components/PhotoSlides';
+import Carousel from './components/Carousel';
 const images = import.meta.glob("/src/assets/**/*.{png,jpg,jpeg,svg}");
 // import { PhotoSlides } from './components/PhotoSlides';
 // import 'dotenv/config'
@@ -32,7 +33,6 @@ function App() {
 
   const {
     error,
-    interimResult,
     isRecording,
     results,
     startSpeechToText,
@@ -45,21 +45,30 @@ function App() {
   if (error) return <p>Web Speech API is not available in this browser 🤷‍</p>;
 
   useEffect(() => {
-    startSpeechToText()
-    const lastResult = results[results.length - 1]
-    console.log(lastResult, "<<<<<<<")
-    if (mode === 'winston' && typeof lastResult === 'object' && lastResult.transcript.toLocaleLowerCase().trim().includes('stop listening')) {
-      setMode('idle')
-      console.log('set to idle<><><><>')
+    try {
+      if (!isRecording) {
+        startSpeechToText();
+      }
+    
+      const lastResult = results[results.length - 1];
+    
+      if (lastResult && typeof lastResult === "object") {
+        const transcript = lastResult.transcript.toLowerCase().trim();
+    
+        if (mode === "winston" && transcript.includes("stop listening")) {
+          setMode("idle");
+          console.log("set to idle<><><><>");
+        }
+        if (transcript.includes("winston")) {
+          setMode("winston");
+          console.log("set to winston");
+        }
+      }
+    } catch (error){
+      console.log("Speech Recognition Error:", error)
     }
-    if (typeof lastResult === 'object' && lastResult.transcript.toLocaleLowerCase().includes('winston')) {
-      setMode('winston')
-      console.log('set to winton')
-    }
-
-
-
-  }, [results])
+    
+  }, [results, isRecording]); // Ensure it only starts when needed
 
 
   return (
@@ -74,16 +83,7 @@ function App() {
         </div>
         :
         <>
-          <div style={{height: '100vh', width: '100vw'}}>
-          <CustomCarousel>
-            {photos.map((photo) => {
-              return (
-                <img src={photo} alt={photo}/>
-              )
-            })}
-
-          </CustomCarousel>
-          </div>
+        <Carousel images={photos}/>
         </>
       }
 

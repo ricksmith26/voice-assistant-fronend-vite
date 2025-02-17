@@ -24,20 +24,6 @@
   background-color:#111;
 }
 
-.hidden-photo {
-  transition: 'all 0.5s ease-in-out';
-  object-fit: 'contain';
-  position: 'absolute';
-  max-height: '100%';
-  max-width: "100%";
-  visibility: hidden;
-  transition: all 250ms ease-in-out,;
-  visibility: hidden
-}
-
-.visible-photo {
-  visibility: visible;
-}
 /* .lk-agent-control-bar {
   @apply border-t-0 p-0 h-min mr-4;
 }
