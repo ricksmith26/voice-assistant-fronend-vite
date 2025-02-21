@@ -2,19 +2,39 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import Winston from './winston/page'
 import useSpeechToText from 'react-hook-speech-to-text';
-import CustomCarousel from './components/PhotoSlides';
 import Carousel from './components/Carousel';
+import LoginButton from './components/LoginButton';
 const images = import.meta.glob("/src/assets/**/*.{png,jpg,jpeg,svg}");
 // import { PhotoSlides } from './components/PhotoSlides';
 // import 'dotenv/config'
 
-
+export type User = {
+  _id: string;
+  googleId: string;
+  name: string;
+  email: string;
+  picture: string;
+  createdAt: string; // ISO date string
+  __v: number;
+  accessToken?: string; // Optional if you don't always return it
+};
 
 function App() {
   const [count, setCount] = useState(0)
   const [mode, setMode] = useState('idle')
   const [photos, setPhotos] = useState([] as any[])
   const [index, setIndex] = useState(0);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    fetch("http://localhost:3001/auth/me", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) return
+        setUser(data)})
+      .catch(() => setUser(null));
+  }, []);
+
 
 
   //joining path of directory 
@@ -24,6 +44,10 @@ function App() {
 
     return filePaths; // Return the list of image paths
   }
+
+  useEffect(() => {
+    console.log(user,'<<<<<')
+  }, [user])
 
 
   useEffect(() => {
@@ -74,18 +98,19 @@ function App() {
   return (
     <>
 
+      {!user && <LoginButton/>}
+
       {mode === 'winston'
-        ?
+        &&
         <div className='assistant-constainer'>
           <main data-lk-theme="default" className="h-full grid content-center bg-[var(--lk-bg)]">
-            <Winston mode={mode}></Winston>
+            <Winston email={user?.email} mode={mode}></Winston>
           </main>
-        </div>
-        :
-        <>
-        <Carousel images={photos}/>
-        </>
-      }
+        </div>}
+   
+        {mode === 'idle' && user && <Carousel images={photos}/>}
+
+    
 
     </>
   )

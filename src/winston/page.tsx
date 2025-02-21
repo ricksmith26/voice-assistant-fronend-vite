@@ -10,7 +10,7 @@ import {
   VideoConference
 } from "@livekit/components-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { MediaDeviceFailure } from "livekit-client";
+import { MediaDeviceFailure, Room } from "livekit-client";
 import { NoAgentNotification } from "../components/NoAgentNotification";
 import { CloseIcon } from "../components/CloseIcon";
 import { useKrispNoiseFilter } from "@livekit/components-react/krisp";
@@ -23,7 +23,7 @@ export type ConnectionDetails = {
   participantToken: string;
 };
 
-export default function Winston({ mode }: any) {
+export default function Winston({ mode, email }: any) {
   const [connectionDetails, updateConnectionDetails] = useState<
     ConnectionDetails | undefined
   >(undefined);
@@ -37,11 +37,11 @@ export default function Winston({ mode }: any) {
         window.location.origin
       );
 
-      const response = await fetch(url.toString());
+      const response = await fetch(`${url}/${email}`);
       if (!response.ok) throw new Error("Failed to fetch connection details");
 
       const connectionDetailsData = await response.json();
-      console.log(connectionDetailsData);
+      console.log(connectionDetailsData, '<><><><><><><><><>connectionDetailsData<><>');
       updateConnectionDetails(connectionDetailsData);
     } catch (error) {
       console.error("Error fetching connection details:", error);
