@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import Winston from './winston/page'
 import useSpeechToText from 'react-hook-speech-to-text';
-import Carousel from './components/Carousel';
+import Carousel from './pages/Carousel/Carousel';
 import Login from './login/Login';
 
 import axios from "axios";
+import {PatientForm} from './components/patientForm/PatientForm';
 const images = import.meta.glob("/src/assets/*.{png,jpg,jpeg,svg}");
 // import { PhotoSlides } from './components/PhotoSlides';
 // import 'dotenv/config'
@@ -33,6 +34,7 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         if (data.error) return
+
         setUser(data)})
       .catch(() => setUser(null));
   }, []);
@@ -113,7 +115,7 @@ function App() {
   return (
     <div className='app'>
 
-      {!user && <Login/>}
+      {/* {!user && <Login/>}
 
       {mode === 'winston'
         &&
@@ -121,9 +123,10 @@ function App() {
           <main data-lk-theme="default" className="h-full grid content-center bg-[var(--lk-bg)]">
             <Winston email={user?.email} mode={mode}></Winston>
           </main>
-        </div>}
+        </div>} */}
+        <PatientForm/>
    
-        {mode === 'idle' && user && <Carousel images={photos}/>}
+        {/* {mode === 'idle' && user && <Carousel images={photos}/>} */}
 
     
 

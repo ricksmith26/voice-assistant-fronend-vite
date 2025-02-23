@@ -1,0 +1,44 @@
+.inputsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: center;
+    align-items: center;
+    align-content: center;
+
+}
+
+.namesContainer {
+    width: max-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-right: 16px;
+}
+
+.buttonContainer {
+    margin-top: 16px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.titleContainer {
+    width: max-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.logo {
+    object-fit: cover;
+
+}
