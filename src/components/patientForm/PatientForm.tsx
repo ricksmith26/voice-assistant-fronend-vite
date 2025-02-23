@@ -6,6 +6,7 @@ import './patientForm.css'
 import { PersonalDetails } from "./patientFormPages/PersonalDetails"
 import { FormEvent, useActionState, useEffect, useState } from "react"
 import { EmergencyContacts } from "./patientFormPages/EmergencyContacts"
+import { FormTitle } from "./patientFormPages/FormTitle"
 
 const addPatient = async () => {
 
@@ -14,6 +15,7 @@ const addPatient = async () => {
 export const PatientForm = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [patient, setPatient] = useState({})
+    const [contacts, setContacts] = useState([])
 
     const pageText = [
         "It looks like you don't have an account yet! Lets get to know you.",
@@ -26,6 +28,8 @@ export const PatientForm = () => {
         setPatient(p)
     }
 
+    
+
 
     useEffect(() => {
         console.log(currentPage)
@@ -33,20 +37,23 @@ export const PatientForm = () => {
 
 
     return (
-        <div className="titleContainer">
-            <div className="formContainer">
-                <div className="logo">
-                    <img src={logo} style={{ maxHeight: '150px' }} />
-                </div>
-                <h4 style={{ width: 'max-content' }}>{pageText[currentPage]}</h4>
-            </div>
-        
+        <>
+            <FormTitle text={pageText[currentPage]}/>
 
-            {currentPage == 0 &&  <PersonalDetails onChange={onPatientChange}/>}
-            {currentPage == 1 && <EmergencyContacts />}
+            <div className="contentsContainer">
+
+            {currentPage === 0 &&  <PersonalDetails onChange={onPatientChange}/>}
+            {currentPage === 1 && <EmergencyContacts setContacts={setContacts} contacts={contacts}/>}
+           {currentPage === 0  && 
            <div className="buttonContainer">
                 <Button onClick={() => setCurrentPage(currentPage + 1)}>Next</Button>
-            </div> 
+            </div>} 
+            {currentPage === 1 && contacts.length > 0  && 
+           <div className="buttonContainer">
+                <Button onClick={() => setCurrentPage(currentPage + 1)}>Next</Button>
+            </div>} 
         </div>
+        </>
+       
     )
 }
