@@ -3,8 +3,10 @@ import './App.css'
 import Winston from './winston/page'
 import useSpeechToText from 'react-hook-speech-to-text';
 import Carousel from './components/Carousel';
-import LoginButton from './components/LoginButton';
-const images = import.meta.glob("/src/assets/**/*.{png,jpg,jpeg,svg}");
+import Login from './login/Login';
+
+import axios from "axios";
+const images = import.meta.glob("/src/assets/*.{png,jpg,jpeg,svg}");
 // import { PhotoSlides } from './components/PhotoSlides';
 // import 'dotenv/config'
 
@@ -47,13 +49,26 @@ function App() {
 
   useEffect(() => {
     console.log(user,'<<<<<')
-  }, [user])
-
+  }, [user?.accessToken])
 
   useEffect(() => {
-    listImages().then((images) => setPhotos(images))
+    if (user?.accessToken) {
+      const accessToken = user?.accessToken
+      axios
+        .get(`http://localhost:3001/images`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        .then((response) => {
+          setPhotos(response.data.images.reduce((acc: string[], val: any) => {
+            acc.push(val.url)
+            return acc;
+          }, []));
+        })
+        .catch((error) => console.error("Error fetching images:", error))
+        // .finally(() => setLoading(false));
+    }
+  }, [user?.accessToken]);
 
-  }, [])
 
   const {
     error,
@@ -96,9 +111,9 @@ function App() {
 
 
   return (
-    <>
+    <div className='app'>
 
-      {!user && <LoginButton/>}
+      {!user && <Login/>}
 
       {mode === 'winston'
         &&
@@ -112,7 +127,7 @@ function App() {
 
     
 
-    </>
+    </div>
   )
 }
 

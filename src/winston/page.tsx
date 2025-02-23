@@ -10,10 +10,13 @@ import {
   VideoConference
 } from "@livekit/components-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { MediaDeviceFailure, Room } from "livekit-client";
+import { MediaDeviceFailure, Room, RpcError, RpcInvocationData } from "livekit-client";
+import { useRoomContext } from "@livekit/components-react";
 import { NoAgentNotification } from "../components/NoAgentNotification";
 import { CloseIcon } from "../components/CloseIcon";
 import { useKrispNoiseFilter } from "@livekit/components-react/krisp";
+
+// import { Room, RoomServiceClient } from 'livekit-server-sdk';
 import "@livekit/components-styles";
 
 export type ConnectionDetails = {
@@ -31,7 +34,6 @@ export default function Winston({ mode, email }: any) {
 
   const onConnectButtonClicked = useCallback(async () => {
     try {
-      console.log(import.meta.env.VITE_NEXT_PUBLIC_CONN_DETAILS_ENDPOINT, '<<<<<')
       const url = new URL(
         import.meta.env.VITE_NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? "/api/connection-details",
         window.location.origin
@@ -41,7 +43,6 @@ export default function Winston({ mode, email }: any) {
       if (!response.ok) throw new Error("Failed to fetch connection details");
 
       const connectionDetailsData = await response.json();
-      console.log(connectionDetailsData, '<><><><><><><><><>connectionDetailsData<><>');
       updateConnectionDetails(connectionDetailsData);
     } catch (error) {
       console.error("Error fetching connection details:", error);
@@ -49,8 +50,11 @@ export default function Winston({ mode, email }: any) {
     }
   }, []);
 
+  const createRoom = () => {
+    const room = new Room({})
+  }
+
   useEffect(() => {
-    console.log(mode, '<<<<<<mode<<')
     if (mode === 'winston') {
       onConnectButtonClicked()
     } else {

@@ -1,19 +1,19 @@
-@import "tailwindcss";
+/* @import "tailwindcss"; */
 
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
 
-:root {
+/* :root {
   --lk-va-bar-width: 72px;
   --lk-control-bar-height: unset;
-}
+} */
 
 .agent-visualizer > .lk-audio-bar {
   width: 72px;
 }
 
-.assistant-constainer {
+.app {
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -21,7 +21,7 @@
   justify-content: center;
   align-content: center;
   align-items: center;
-  background-color:#111;
+  background-color:#BFCED6;
 }
 
 /* .lk-agent-control-bar {

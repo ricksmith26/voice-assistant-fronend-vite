@@ -14,6 +14,7 @@
     "@livekit/components-styles": "^1.1.4",
     "@livekit/krisp-noise-filter": "^0.2.16",
     "@tailwindcss/vite": "^4.0.6",
+    "axios": "^1.7.9",
     "carousel": "^0.0.3",
     "dotenv": "^16.4.7",
     "framer-motion": "^12.4.3",
@@ -26,7 +27,8 @@
     "react-hook-speech-to-text": "^0.8.0",
     "react-image-gallery": "^1.4.0",
     "react-responsive-carousel": "^3.2.23",
-    "tailwindcss": "^4.0.6"
+    "tailwindcss": "^4.0.6",
+    "use-sound": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
