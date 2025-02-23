@@ -42,3 +42,10 @@
     object-fit: cover;
 
 }
+
+.dateOfbirth {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+
+}
