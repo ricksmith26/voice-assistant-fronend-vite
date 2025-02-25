@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import Winston from './winston/page'
 import useSpeechToText from 'react-hook-speech-to-text';
-import Carousel from './pages/Carousel/Carousel';
+import Carousel from './components/Carousel/Carousel';
 import Login from './login/Login';
 
 import axios from "axios";
@@ -114,7 +114,7 @@ function App() {
 
   return (
     <div className='app'>
-       {/* {!user && <Login/>} */}
+       {!user && <Login/>}
 
       {/* {mode === 'winston'
         &&
@@ -124,7 +124,7 @@ function App() {
    
          {/* {mode === 'idle' && user && <Carousel images={photos}/>}   */}
 
-<PatientForm/> 
+    <PatientForm email={user?.email || ''} /> 
 
     </div>
   )

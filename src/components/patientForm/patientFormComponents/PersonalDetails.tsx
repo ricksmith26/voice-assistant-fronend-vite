@@ -9,7 +9,6 @@ interface PersonalDetailsProps {
 
 export const PersonalDetails = ({ onChange, onClick }: PersonalDetailsProps) => {
 
-
     return (
         <>
             <Tile title="Personal Details">

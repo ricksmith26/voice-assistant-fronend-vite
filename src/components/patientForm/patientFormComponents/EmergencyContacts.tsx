@@ -3,6 +3,7 @@ import Button from "../../Button/Button"
 import { TextInput } from "../../formComponents/TextInput/TextInput"
 import { Tile } from "../../Tile/Tile";
 import { ListedContacts } from "./ListedContacts";
+import { createContacts } from "../../../api/ContactApi";
 
 type Contact = {
     Firstname: string;
@@ -12,7 +13,12 @@ type Contact = {
 
 }
 
-export const EmergencyContacts = ({ contacts, setContacts, onClick }: { contacts: any[], setContacts: any, onClick: Function }) => {
+export const EmergencyContacts = (
+    {
+        contacts,
+        setContacts,
+        patientId
+    }: { contacts: any[], setContacts: any, onClick: Function, patientId: string }) => {
     const [contact, setContact] = useState<Contact>({
         Firstname: '',
         Lastname: '',
@@ -45,6 +51,14 @@ export const EmergencyContacts = ({ contacts, setContacts, onClick }: { contacts
         setContact(blankContact)
     }
 
+    const submitContacts = async() => {
+        try {
+            await createContacts(patientId, contacts)
+        } catch (error) {
+            console.log(error, "<<<<<<")
+        }
+    }
+
     useEffect(() => {
         console.log(contact, '<<<<<<<<<+++++')
     }, [contact])
@@ -70,7 +84,7 @@ export const EmergencyContacts = ({ contacts, setContacts, onClick }: { contacts
                 </div>
                 <div className="buttonContainer">
                     <Button onClick={addContact}>{contacts.length === 0 ? 'Add contact+' : 'Add another contact +'}</Button>
-                    {contacts.length > 0  && <Button onClick={onClick}>Next</Button>}
+                    {contacts.length > 0  && <Button onClick={submitContacts}>Next</Button>}
                 </div>
             </Tile>
 
