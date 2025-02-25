@@ -8,6 +8,8 @@ interface PersonalDetailsProps {
 }
 
 export const PersonalDetails = ({ onChange, onClick }: PersonalDetailsProps) => {
+
+
     return (
         <>
             <Tile title="Personal Details">
@@ -16,9 +18,9 @@ export const PersonalDetails = ({ onChange, onClick }: PersonalDetailsProps) => 
                         <TextInput label='Firstname' name='Firstname' placeholder="Firstname" onChange={onChange} />
                         <TextInput label='Lastname' name='Lastname' placeholder="Lastname" onChange={onChange} />
                         <div className="dateOfbirth">
-                            <TextInput label='Date of birth' name='day' placeholder="DD" style={{ width: '50px', marginLeft: '0px' }} onChange={onChange} />
-                            <TextInput name='month' placeholder="MM" style={{ width: '50px', marginLeft: '0px' }} onChange={onChange} />
-                            <TextInput name='year' placeholder="YYYY" style={{ width: '84px', marginLeft: '0px' }} onChange={onChange} />
+                            <TextInput label='Date of birth' name='day' placeholder="DD" style={{ width: '52px', marginLeft: '0px' }} onChange={onChange} />
+                            <TextInput name='month' placeholder="MM" style={{ width: '52px', marginLeft: '0px' }} onChange={onChange} />
+                            <TextInput name='year' placeholder="YYYY" style={{ width: '78px', marginLeft: '0px' }} onChange={onChange} />
                         </div>
 
                     </div>
