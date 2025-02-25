@@ -16,7 +16,6 @@ import { NoAgentNotification } from "../components/NoAgentNotification";
 import { CloseIcon } from "../components/CloseIcon";
 import { useKrispNoiseFilter } from "@livekit/components-react/krisp";
 
-// import { Room, RoomServiceClient } from 'livekit-server-sdk';
 import "@livekit/components-styles";
 
 export type ConnectionDetails = {
@@ -50,9 +49,6 @@ export default function Winston({ mode, email }: any) {
     }
   }, []);
 
-  const createRoom = () => {
-    const room = new Room({})
-  }
 
   useEffect(() => {
     if (mode === 'winston') {
@@ -63,7 +59,7 @@ export default function Winston({ mode, email }: any) {
   }, [mode])
 
   return (
-    // <main className="h-full grid content-center bg-[var(--lk-bg)]">
+    <div className="h-full grid content-center bg-[var(--lk-bg)]">
     <LiveKitRoom
       token={connectionDetails?.participantToken}
       serverUrl={connectionDetails?.serverUrl}
@@ -82,7 +78,7 @@ export default function Winston({ mode, email }: any) {
       <RoomAudioRenderer />
       <NoAgentNotification state={agentState} />
     </LiveKitRoom>
-    // </main>
+    </div>
   );
 }
 

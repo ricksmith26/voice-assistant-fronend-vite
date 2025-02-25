@@ -114,21 +114,17 @@ function App() {
 
   return (
     <div className='app'>
+       {/* {!user && <Login/>} */}
 
-      {/* {!user && <Login/>}
-
-      {mode === 'winston'
+      {/* {mode === 'winston'
         &&
         <div className='assistant-constainer'>
-          <main data-lk-theme="default" className="h-full grid content-center bg-[var(--lk-bg)]">
-            <Winston email={user?.email} mode={mode}></Winston>
-          </main>
-        </div>} */}
-        <PatientForm/>
+            <Winston email={user?.email} mode={mode}></Winston> 
+        </div>} 
    
-        {/* {mode === 'idle' && user && <Carousel images={photos}/>} */}
+         {/* {mode === 'idle' && user && <Carousel images={photos}/>}   */}
 
-    
+<PatientForm/> 
 
     </div>
   )

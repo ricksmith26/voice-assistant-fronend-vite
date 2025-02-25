@@ -10,11 +10,11 @@ type TextInputProps = {
     style?: {[key: string]: string}
   };
 
-export const TextInput = ({label, name, placeholder = "Placeholder Text", onChange = () => {}, style = {}}: TextInputProps) => {
+export const TextInput = ({label, name, placeholder = "Placeholder Text", onChange = () => {}, style = {}, value}: TextInputProps) => {
     return (
         <div className="custom_input">
             {label && <label className='textInputLabel'>{label}</label>}
-            <input className="textInput" name={name} type="text" placeholder={placeholder} onChange={onChange} style={{...style}}/>
+            <input className="textInput" name={name} type="text" placeholder={placeholder} onChange={onChange} style={{...style}} value={value}/>
         </div>
     )
 }

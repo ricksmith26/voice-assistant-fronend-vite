@@ -1,20 +1,13 @@
 import Button from "../Button/Button"
-import { TextInput } from "../formComponents/TextInput/TextInput"
-import logo from '../../assets/logos/justLogo.jpg'
-// import { AnimatedTitle } from "../Title/Title"
 import './patientForm.css'
-import { PersonalDetails } from "./patientFormPages/PersonalDetails"
-import { FormEvent, useActionState, useEffect, useState } from "react"
-import { EmergencyContacts } from "./patientFormPages/EmergencyContacts"
-import { FormTitle } from "./patientFormPages/FormTitle"
-
-const addPatient = async () => {
-
-}
+import { PersonalDetails } from "./patientFormComponents/PersonalDetails"
+import { useEffect, useState } from "react"
+import { EmergencyContacts } from "./patientFormComponents/EmergencyContacts"
+import { FormTitle } from "./patientFormComponents/FormTitle"
 
 export const PatientForm = () => {
     const [currentPage, setCurrentPage] = useState(0);
-    const [patient, setPatient] = useState({})
+    const [patient, setPatient] = useState({Firstname: '', Lastname: '', Email: '', Phone: ''})
     const [contacts, setContacts] = useState([])
 
     const pageText = [
@@ -23,12 +16,10 @@ export const PatientForm = () => {
     ]
 
     const onPatientChange = (event: any) => {
-        const p = {...patient, [event.target.name]: event.target.value}
+        const p = { ...patient, [event.target.name]: event.target.value }
         console.log(p, '<<<<')
         setPatient(p)
     }
-
-    
 
 
     useEffect(() => {
@@ -37,23 +28,15 @@ export const PatientForm = () => {
 
 
     return (
-        <>
-            <FormTitle text={pageText[currentPage]}/>
+        <div className="patientFormBackground">
+            <FormTitle text={pageText[currentPage]} />
 
             <div className="contentsContainer">
 
-            {currentPage === 0 &&  <PersonalDetails onChange={onPatientChange}/>}
-            {currentPage === 1 && <EmergencyContacts setContacts={setContacts} contacts={contacts}/>}
-           {currentPage === 0  && 
-           <div className="buttonContainer">
-                <Button onClick={() => setCurrentPage(currentPage + 1)}>Next</Button>
-            </div>} 
-            {currentPage === 1 && contacts.length > 0  && 
-           <div className="buttonContainer">
-                <Button onClick={() => setCurrentPage(currentPage + 1)}>Next</Button>
-            </div>} 
+                {currentPage === 0 && <PersonalDetails onChange={onPatientChange} onClick={() => setCurrentPage(currentPage + 1)}/>}
+                {currentPage === 1 && <EmergencyContacts setContacts={setContacts} contacts={contacts}  onClick={() => setCurrentPage(currentPage + 1)}/>}
+            </div>
         </div>
-        </>
-       
+
     )
 }

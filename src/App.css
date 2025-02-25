@@ -1,13 +1,14 @@
-/* @import "tailwindcss"; */
+@import "tailwindcss";
 
-/* @tailwind base;
+@tailwind base;
 @tailwind components;
-@tailwind utilities; */
+@tailwind utilities; 
 
-/* :root {
+:root {
   --lk-va-bar-width: 72px;
   --lk-control-bar-height: unset;
-} */
+  width: 100vw;
+}
 
 .agent-visualizer > .lk-audio-bar {
   width: 72px;
@@ -24,10 +25,15 @@
   background-color:#b2cdd6;
 }
 
-/* .lk-agent-control-bar {
+.lk-agent-control-bar {
   @apply border-t-0 p-0 h-min mr-4;
 }
 
 .lk-disconnect-button {
-  @apply h-[36px] hover:bg-[#6b221a] hover:text-[white] bg-[#31100c] border-[#6b221a]; */
-/* } */
+  @apply h-[36px] hover:bg-[#6b221a] hover:text-[white] bg-[#31100c] border-[#6b221a]; 
+}
+.assistant-constainer {
+  width: 100wh;
+  height: 100vh;
+  background-color: black;
+}
