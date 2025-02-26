@@ -6,7 +6,8 @@ import Carousel from './components/Carousel/Carousel';
 import Login from './login/Login';
 
 import axios from "axios";
-import {PatientForm} from './components/patientForm/PatientForm';
+import { PatientForm } from './components/patientForm/PatientForm';
+import bigitSmallLogo from './assets/logos/bigitSmallLogo.jpg'
 const images = import.meta.glob("/src/assets/*.{png,jpg,jpeg,svg}");
 // import { PhotoSlides } from './components/PhotoSlides';
 // import 'dotenv/config'
@@ -28,14 +29,17 @@ function App() {
   const [photos, setPhotos] = useState([] as any[])
   const [index, setIndex] = useState(0);
   const [user, setUser] = useState<User | null>(null);
+  const [patientContacts, setPatientContacts] = useState([])
+  const [isLoading, setLoading] = useState(true)
 
   useEffect(() => {
+    setLoading(true)
     fetch("http://localhost:3001/auth/me", { credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
         if (data.error) return
-
-        setUser(data)})
+        setUser(data)
+      })
       .catch(() => setUser(null));
   }, []);
 
@@ -50,25 +54,40 @@ function App() {
   }
 
   useEffect(() => {
-    console.log(user,'<<<<<')
+    console.log(user, '<<<<<')
   }, [user?.accessToken])
+
+  const imageRequest = (accessToken: string) => {
+    return axios
+      .get(`http://localhost:3001/images`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+  }
+
+  const contactRequest = (accessToken: string) => {
+    return axios
+      .get(`http://localhost:3001/relatedPerson/email/${user?.email}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+  }
 
   useEffect(() => {
     if (user?.accessToken) {
       const accessToken = user?.accessToken
-      axios
-        .get(`http://localhost:3001/images`, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        })
-        .then((response) => {
-          setPhotos(response.data.images.reduce((acc: string[], val: any) => {
-            acc.push(val.url)
-            return acc;
-          }, []));
-        })
-        .catch((error) => console.error("Error fetching images:", error))
-        // .finally(() => setLoading(false));
+      axios.all([imageRequest(accessToken), contactRequest(accessToken)]).then((responses) => {
+        console.log(responses)
+        setPhotos(responses[0].data.images.reduce((acc: string[], val: any) => {
+          acc.push(val.url)
+          return acc;
+        }, []));
+        setPatientContacts(responses[1].data)
+      });
     }
+    setTimeout(() => {
+      setLoading(false)
+    }, 2000)
+
+
   }, [user?.accessToken]);
 
 
@@ -90,12 +109,12 @@ function App() {
       if (!isRecording) {
         startSpeechToText();
       }
-    
+
       const lastResult = results[results.length - 1];
-    
+
       if (lastResult && typeof lastResult === "object") {
         const transcript = lastResult.transcript.toLowerCase().trim();
-    
+
         if (mode === "winston" && transcript.includes("stop listening")) {
           setMode("idle");
           console.log("set to idle<><><><>");
@@ -105,26 +124,30 @@ function App() {
           console.log("set to winston");
         }
       }
-    } catch (error){
+    } catch (error) {
       console.log("Speech Recognition Error:", error)
     }
-    
+
   }, [results, isRecording]); // Ensure it only starts when needed
 
 
   return (
     <div className='app'>
-       {!user && <Login/>}
+     { isLoading
+     ? <><img src={bigitSmallLogo}/></> 
+     : <>
+        {!user && <Login />}
 
-      {/* {mode === 'winston'
-        &&
-        <div className='assistant-constainer'>
-            <Winston email={user?.email} mode={mode}></Winston> 
-        </div>} 
-   
-         {/* {mode === 'idle' && user && <Carousel images={photos}/>}   */}
+        {mode === 'winston' &&
+          <div className='assistant-constainer'>
+            <Winston email={user?.email} mode={mode}></Winston>
+          </div>}
 
-    <PatientForm email={user?.email || ''} /> 
+        {mode === 'idle' && user && <Carousel images={photos} />}
+
+        {patientContacts.length === 0 && <PatientForm email={user?.email || ''} setMode={setMode} />}
+      </>}
+
 
     </div>
   )

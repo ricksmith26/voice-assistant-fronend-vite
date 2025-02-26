@@ -3,7 +3,7 @@ import Button from "../../Button/Button"
 import { TextInput } from "../../formComponents/TextInput/TextInput"
 import { Tile } from "../../Tile/Tile";
 import { ListedContacts } from "./ListedContacts";
-import { createContacts } from "../../../api/ContactApi";
+import { createRelatedPersons } from "../../../api/EmergencyContactApi";
 
 type Contact = {
     Firstname: string;
@@ -13,12 +13,11 @@ type Contact = {
 
 }
 
-export const EmergencyContacts = (
-    {
+export const EmergencyContacts = ({
         contacts,
         setContacts,
-        patientId
-    }: { contacts: any[], setContacts: any, onClick: Function, patientId: string }) => {
+        submitContacts
+    }: { contacts: any[], setContacts: any, submitContacts: Function }) => {
     const [contact, setContact] = useState<Contact>({
         Firstname: '',
         Lastname: '',
@@ -27,10 +26,8 @@ export const EmergencyContacts = (
 
     })
 
-
     const onContactChange = (event: any) => {
         const c = { ...contact, [event.target.name]: event.target.value }
-        console.log(c, '<<<<')
         setContact(c)
     }
 
@@ -47,17 +44,9 @@ export const EmergencyContacts = (
 
             }
         }
-        console.log(blankContact, '<<<<<<<<<BLANK')
         setContact(blankContact)
     }
 
-    const submitContacts = async() => {
-        try {
-            await createContacts(patientId, contacts)
-        } catch (error) {
-            console.log(error, "<<<<<<")
-        }
-    }
 
     useEffect(() => {
         console.log(contact, '<<<<<<<<<+++++')
@@ -70,7 +59,7 @@ export const EmergencyContacts = (
 
     return (
         <>
-            <ListedContacts contacts={contacts}/>
+            <ListedContacts contacts={contacts} />
             <Tile title="Contact Details">
                 <div className="inputsContainer">
                     <div className="namesContainer">
@@ -84,7 +73,7 @@ export const EmergencyContacts = (
                 </div>
                 <div className="buttonContainer">
                     <Button onClick={addContact}>{contacts.length === 0 ? 'Add contact+' : 'Add another contact +'}</Button>
-                    {contacts.length > 0  && <Button onClick={submitContacts}>Next</Button>}
+                    {contacts.length > 0 && <Button onClick={submitContacts}>Next</Button>}
                 </div>
             </Tile>
 

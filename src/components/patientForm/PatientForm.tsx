@@ -5,14 +5,16 @@ import { useEffect, useState } from "react"
 import { EmergencyContacts } from "./patientFormComponents/EmergencyContacts"
 import { FormTitle } from "./patientFormComponents/FormTitle"
 import { createPatient } from "../../api/PatientApi"
+import { createRelatedPersons } from "../../api/EmergencyContactApi"
 
 interface PatientFormProps {
     email: string;
+    setMode: Function;
 }
 
-export const PatientForm = ({email}: PatientFormProps) => {
+export const PatientForm = ({ email, setMode }: PatientFormProps) => {
     const [currentPage, setCurrentPage] = useState(0);
-    const [paitentId, setPatientId] =useState('');
+    const [patientId, setPatientId] = useState('');
     const [patient, setPatient] = useState({
         Firstname: "",
         Lastname: "",
@@ -37,7 +39,7 @@ export const PatientForm = ({email}: PatientFormProps) => {
         setPatient(p)
     }
 
-    const submitPatient = async() => {
+    const submitPatient = async () => {
         let patientData = patient;
         patientData.Email = email;
         console.log(patientData, email)
@@ -51,18 +53,38 @@ export const PatientForm = ({email}: PatientFormProps) => {
         }
     }
 
+    const submitContacts = async () => {
+        try {
+            await createRelatedPersons(patientId, contacts)
+            setMode('idle')
+        } catch (error) {
+            console.log(error, "<<<<<<")
+        }
+    }
+
 
     useEffect(() => {
         console.log(currentPage)
     }, [currentPage])
+
+    useEffect(() => {
+        if (email.length > 0) {
+            setCurrentPage(1)
+        }
+    }, [email])
 
 
     return (
         <div className="patientFormBackground">
             <FormTitle text={pageText[currentPage]} />
             <div className="contentsContainer">
-                {currentPage === 0 && <PersonalDetails onChange={onChangePatient} onClick={submitPatient}/>}
-                {currentPage === 1 && <EmergencyContacts patientId={paitentId} setContacts={setContacts} contacts={contacts}  onClick={() => setCurrentPage(currentPage + 1)}/>}
+                {currentPage === 0
+                    && <PersonalDetails onChange={onChangePatient} onClick={submitPatient} />}
+                {currentPage === 1
+                    && <EmergencyContacts
+                        setContacts={setContacts}
+                        contacts={contacts}
+                        submitContacts={submitContacts} />}
             </div>
         </div>
 
