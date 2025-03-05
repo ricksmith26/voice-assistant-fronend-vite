@@ -4,6 +4,7 @@ import Winston from './winston/page'
 import useSpeechToText from 'react-hook-speech-to-text';
 import Carousel from './components/Carousel/Carousel';
 import Login from './login/Login';
+import { socket } from './socket';
 
 import axios from "axios";
 import { PatientForm } from './components/patientForm/PatientForm';
@@ -24,6 +25,10 @@ export type User = {
 };
 
 function App() {
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [fooEvents, setFooEvents] = useState([] as any[]);
+
+  // 
   const [count, setCount] = useState(0)
   const [mode, setMode] = useState('idle')
   const [photos, setPhotos] = useState([] as any[])
@@ -31,6 +36,31 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [patientContacts, setPatientContacts] = useState([])
   const [isLoading, setLoading] = useState(true)
+
+  useEffect(() => {
+    function onConnect() {
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    function onFooEvent(value: any) {
+      console.log(value, "<><><><><><")
+      setFooEvents((previous: any[]) => [...previous, value]);
+    }
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('foo', onFooEvent);
+
+    return () => {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.off('foo', onFooEvent);
+    };
+  }, []);
 
   useEffect(() => {
     setLoading(true)
@@ -59,7 +89,7 @@ function App() {
 
   const imageRequest = (accessToken: string) => {
     return axios
-      .get(`http://localhost:3001/images`, {
+      .get(`http://localhost:3001/images/all`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
   }
