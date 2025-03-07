@@ -12,7 +12,7 @@ export const apiUrl = process.env.api_url ? process.env.api_url : "http://localh
 
 const Login = () => {
     const [loaded, setLoaded] = useState(false);
-    const [play] = useSound(start_up);
+    const [play] = useSound('../assets/sounds/start_up.mp3');
 
     useEffect(() => {
         setTimeout(() => {

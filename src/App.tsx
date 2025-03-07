@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import './App.css'
 import Winston from './winston/page'
 import useSpeechToText from 'react-hook-speech-to-text';
@@ -9,6 +9,9 @@ import { socket } from './socket';
 import axios from "axios";
 import { PatientForm } from './components/patientForm/PatientForm';
 import bigitSmallLogo from './assets/logos/bigitSmallLogo.jpg'
+import { checkAuth } from './api/AuthApi';
+import { contactRequest } from './api/ContactApi';
+import { getImagesRequest } from './api/imageApi';
 const images = import.meta.glob("/src/assets/*.{png,jpg,jpeg,svg}");
 // import { PhotoSlides } from './components/PhotoSlides';
 // import 'dotenv/config'
@@ -62,15 +65,53 @@ function App() {
     };
   }, []);
 
+
+  const getUser = async () => {
+    try {
+      const email = localStorage.getItem('email')
+      console.log(email, '<<<email')
+      const authUser = await checkAuth(email ? email : '')
+      setUser(authUser)
+      console.log(user, '<<user<><><')
+      return authUser
+
+    } catch (error) {
+      throw error
+    }
+  }
+
+  // const getContacts = async(user: User) => {
+  //   try {
+  //     const contacts = await contactRequest(user)
+  //     setPatientContacts(contacts)
+  //     return contacts
+  //   } catch (error) {
+  //     throw error
+  //   }
+  // }
+
+
+
+  const startUp = useCallback(async () => {
+    try {
+      const authUser = await getUser()
+      // await getContacts(authUser)
+      // await getImagesRequest(user?.accessToken || '')
+
+
+    } catch (error) {
+      throw error
+    }
+
+  }, [])
   useEffect(() => {
-    setLoading(true)
-    fetch("http://localhost:3001/auth/me", { credentials: "include" })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) return
-        setUser(data)
-      })
-      .catch(() => setUser(null));
+    try {
+      setLoading(true)
+      startUp()
+    } catch (error) {
+
+    }
+
   }, []);
 
 
@@ -87,16 +128,16 @@ function App() {
     console.log(user, '<<<<<')
   }, [user?.accessToken])
 
-  const imageRequest = (accessToken: string) => {
+  const imageRequest = (accessToken: string, email: string) => {
     return axios
-      .get(`http://localhost:3001/images/all`, {
+      .get(`http://localhost:3001/images/all/${email}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
   }
 
-  const contactRequest = (accessToken: string) => {
+  const contactRequest = (accessToken: string, email: string) => {
     return axios
-      .get(`http://localhost:3001/relatedPerson/email/${user?.email}`, {
+      .get(`http://localhost:3001/relatedPerson/email/${email}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
   }
@@ -104,7 +145,10 @@ function App() {
   useEffect(() => {
     if (user?.accessToken) {
       const accessToken = user?.accessToken
-      axios.all([imageRequest(accessToken), contactRequest(accessToken)]).then((responses) => {
+      const email = user?.email
+      console.log(email, "<<<<")
+      localStorage.setItem("email", email);
+      axios.all([imageRequest(accessToken, email), contactRequest(accessToken, email)]).then((responses) => {
         console.log(responses)
         setPhotos(responses[0].data.images.reduce((acc: string[], val: any) => {
           acc.push(val.url)
@@ -163,20 +207,18 @@ function App() {
 
   return (
     <div className='app'>
-     { isLoading
-     ? <><img src={bigitSmallLogo}/></> 
-     : <>
-        {!user && <Login />}
 
-        {mode === 'winston' &&
-          <div className='assistant-constainer'>
-            <Winston email={user?.email} mode={mode}></Winston>
-          </div>}
+      {!user && <Login />}
 
-        {mode === 'idle' && user && <Carousel images={photos} />}
+      {patientContacts.length === 0 && <PatientForm email={user?.email || ''} setMode={setMode} />}
 
-        {patientContacts.length === 0 && <PatientForm email={user?.email || ''} setMode={setMode} />}
-      </>}
+      {mode === 'winston' &&
+        <div className='assistant-constainer'>
+          <Winston email={user?.email} mode={mode}></Winston>
+        </div>}
+
+      {mode === 'idle' && user && <Carousel images={photos} />}
+
 
 
     </div>
