@@ -10,6 +10,7 @@ import { checkAuth } from './api/AuthApi';
 import { contactRequest } from './api/ContactApi';
 import { getImagesRequest } from './api/imageApi';
 import { getPatient } from './api/PatientApi';
+import { WebRTC } from './components/WebRTC/WebRTC';
 
 export type User = {
   _id: string;
@@ -25,7 +26,7 @@ export type User = {
 function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [fooEvents, setFooEvents] = useState([] as any[]);
-
+  const [webRTCMessage, setWebRTCMessage] = useState<any>()
   // 
   const [count, setCount] = useState(0)
   const [mode, setMode] = useState('idle')
@@ -35,43 +36,19 @@ function App() {
   const [patientContacts, setPatientContacts] = useState([])
   const [isLoading, setLoading] = useState(true)
 
-  useEffect(() => {
-    function onConnect() {
-      setIsConnected(true);
-    }
-
-    function onDisconnect() {
-      setIsConnected(false);
-    }
-
-    function onFooEvent(value: any) {
-      setFooEvents((previous: any[]) => [...previous, value]);
-    }
-
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    socket.on('foo', onFooEvent);
-
-    return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.off('foo', onFooEvent);
-    };
-  }, []);
-
-
   const getUser = async () => {
     try {
       const authUser = await checkAuth()
       localStorage.setItem('email', authUser.email)
       setUser(authUser)
+      // socket.emit('register', authUser?.email);
       return authUser
     } catch (error) {
       throw error
     }
   }
 
-  const getContacts = async() => {
+  const getContacts = async () => {
     try {
       const contacts = await contactRequest()
       setPatientContacts(contacts)
@@ -81,7 +58,7 @@ function App() {
     }
   }
 
-  const getAndSetImages = async() => {
+  const getAndSetImages = async () => {
     try {
       const images = await getImagesRequest();
       setPhotos(images);
@@ -102,7 +79,7 @@ function App() {
     } catch (error) {
       setMode('patientForm')
       throw error
-    } 
+    }
     try {
       await getContacts()
     } catch (error) {
@@ -115,14 +92,33 @@ function App() {
     } catch (error) {
 
     }
-   
-
   }, [])
+
   useEffect(() => {
     try {
       setLoading(true)
       startUp()
       setLoading(false)
+      function onConnect() {
+        setIsConnected(true);
+      }
+      function onDisconnect() {
+        setIsConnected(false);
+      }
+      socket.on('connect', onConnect);
+      socket.on('disconnect', onDisconnect);
+      socket.on('message', (message: any)=> {
+        if (message.type === 'WEBRTC') {
+          console.log(message.message, '<><>')
+          setWebRTCMessage(message)
+        }
+
+    })
+      setLoading(false)
+      return () => {
+        socket.off('connect', onConnect);
+        socket.off('disconnect', onDisconnect);
+      };
     } catch (error) {
       throw error
     }
@@ -181,7 +177,8 @@ function App() {
           <Winston email={user?.email} mode={mode}></Winston>
         </div>}
 
-      {mode === 'idle' && user && <Carousel images={photos} />}
+      {/* {mode === 'idle' && user && <Carousel images={photos} />} */}
+      {mode === 'idle' && user && <WebRTC socket={socket} message={webRTCMessage || ''}/>}
 
 
 
