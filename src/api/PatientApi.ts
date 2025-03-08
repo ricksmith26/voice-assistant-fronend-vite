@@ -68,3 +68,8 @@ export const createPatient = async (formData: {
     throw error;
   }
 };
+
+export const getPatient = async() => {
+  const response = await axios.get("http://localhost:3001/patients/email",{ withCredentials: true })
+  return response.data
+}
