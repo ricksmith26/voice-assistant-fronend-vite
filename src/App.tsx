@@ -178,7 +178,7 @@ function App() {
         </div>}
 
       {/* {mode === 'idle' && user && <Carousel images={photos} />} */}
-      {mode === 'idle' && user && <WebRTC socket={socket} message={webRTCMessage || ''}/>}
+      {mode === 'idle' && user && <WebRTC socket={socket}/>}
 
 
 
