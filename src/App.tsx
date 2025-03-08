@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import './App.css'
+import useSound from 'use-sound';
 import Winston from './winston/page'
 import useSpeechToText from 'react-hook-speech-to-text';
 import Carousel from './components/Carousel/Carousel';
@@ -10,6 +11,9 @@ import { checkAuth } from './api/AuthApi';
 import { contactRequest } from './api/ContactApi';
 import { getImagesRequest } from './api/imageApi';
 import { getPatient } from './api/PatientApi';
+import Button from './components/Button/Button';
+import mySound from "./assets/sounds/start_up.mp3";
+import { WebRTCTest } from './components/WebRTC/WebRTCTest';
 import { WebRTC } from './components/WebRTC/WebRTC';
 
 export type User = {
@@ -35,6 +39,8 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [patientContacts, setPatientContacts] = useState([])
   const [isLoading, setLoading] = useState(true)
+  const [play, { stop }] = useSound(mySound);
+
 
   const getUser = async () => {
     try {
@@ -107,13 +113,13 @@ function App() {
       }
       socket.on('connect', onConnect);
       socket.on('disconnect', onDisconnect);
-      socket.on('message', (message: any)=> {
+      socket.on('message', (message: any) => {
         if (message.type === 'WEBRTC') {
           console.log(message.message, '<><>')
           setWebRTCMessage(message)
         }
 
-    })
+      })
       setLoading(false)
       return () => {
         socket.off('connect', onConnect);
@@ -178,9 +184,15 @@ function App() {
         </div>}
 
       {/* {mode === 'idle' && user && <Carousel images={photos} />} */}
-      {mode === 'idle' && user && <WebRTC socket={socket}/>}
+      {mode === 'idle' && user && <WebRTC socket={socket} />}
+      {/* {mode === 'TESTWEBRTC' && user && <WebRTCTest socket={socket} />} */}
 
-
+      {/* <Button
+        onClick={() => setMode('TESTWEBRTC')}
+      >
+        TESTWEBRTC
+      </Button>  */}
+      {/* <audio id="audio_tag" src={mySound} /> */}
 
     </div>
   )

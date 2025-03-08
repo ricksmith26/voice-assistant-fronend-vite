@@ -1,38 +1,45 @@
 import { useEffect, useRef, useState } from "react";
 import { TextInput } from "../formComponents/TextInput/TextInput";
 import Button from "../Button/Button";
-
+import useSound from 'use-sound';
+import outgoingCallSound from "../../assets/sounds/phone-outgoing-call-72202.mp3"
 interface WebRTCProps {
     socket: any;
 }
 
-export const WebRTC = ({ socket }: WebRTCProps) => {
-    const [email, setEmail] = useState<string>("");
-    const [to, setTo] = useState<string>("");
-    const [incomingCall, setIncomingCall] = useState<boolean>(false);
-    const [caller, setCaller] = useState<string | null>(null);
-    const [receivedOffer, setReceivedOffer] = useState<RTCSessionDescriptionInit | null>(null);
+export const WebRTCTest = ({ socket }: WebRTCProps) => {
+    const [email, setEmail] = useState<string>("k");
+    const [to, setTo] = useState<string>("r");
+    const [incomingCall, setIncomingCall] = useState<string | null>(null);
     const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
-    
     const localVideoRef = useRef<HTMLVideoElement>(null);
     const remoteVideoRef = useRef<HTMLVideoElement>(null);
     const localStreamRef = useRef<MediaStream | null>(null);
+    const [play, {stop}] = useSound(outgoingCallSound)
+    const [vidOffer, setVidOffer] = useState<any>()
 
     useEffect(() => {
-        socket.on("incomingCall", ({ fromEmail }: any) => {
-            setCaller(fromEmail);
-            setIncomingCall(true);
+        socket.on("incomingCall", ({ fromEmail }: {fromEmail: string} ) => {
+            console.log("incomingCall", fromEmail)
+            play()
+            setIncomingCall(fromEmail);
         });
 
-        socket.on("offer", async ({ from, offer }: any) => {
-            console.log("Incoming WebRTC Offer", offer);
-            setCaller(from);
-            setReceivedOffer(offer);
-            setIncomingCall(true);
+        socket.on("offer", async ({ from, offer }: { from: string, offer: any }) => {
+            
+            console.log("Received Offer:", offer);
+            const pc = createPeerConnection(from);
+            await pc.setRemoteDescription(new RTCSessionDescription(offer));
+
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            setVidOffer({ to: from, answer })
+
+            // socket.emit("answer", { to: from, answer });
         });
 
         socket.on("answer", async ({ answer }: any) => {
-            console.log("Received Answer");
+            console.log("Received Answer:", answer);
             if (peerConnection) {
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
             }
@@ -59,7 +66,7 @@ export const WebRTC = ({ socket }: WebRTCProps) => {
     const startCall = async () => {
         if (!to) return;
 
-        const pc = createPeerConnection(to);
+        const pc = createPeerConnection(email);
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
 
@@ -67,27 +74,9 @@ export const WebRTC = ({ socket }: WebRTCProps) => {
     };
 
     const acceptCall = async () => {
-        if (!caller || !receivedOffer) return;
-
-        setIncomingCall(false);
-
-        const pc = createPeerConnection(caller);
-        setPeerConnection(pc);
-
-        // **Fix: Set Remote Description First**
-        await pc.setRemoteDescription(new RTCSessionDescription(receivedOffer));
-
-        // **Now, Create and Send an Answer**
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        
-        socket.emit("answer", { to: caller, answer });
-    };
-
-    const rejectCall = () => {
-        setIncomingCall(false);
-        setCaller(null);
-        setReceivedOffer(null);
+        stop()
+        socket.emit("answer", vidOffer);
+        setIncomingCall(null);
     };
 
     const createPeerConnection = (peerEmail: string): RTCPeerConnection => {
@@ -122,19 +111,23 @@ export const WebRTC = ({ socket }: WebRTCProps) => {
         });
     }, []);
 
+    useEffect(() => {
+        console.log(incomingCall, "<<<incomingCall")
+    }, [incomingCall])
+
     return (
         <div>
-            <TextInput placeholder="Your Email" onChange={(e) => setEmail(e.target.value)} />
-            <TextInput placeholder="Send to" onChange={(e) => setTo(e.target.value)} />
+            <TextInput placeholder="Your Email" onChange={(e) => setEmail(e.target.value)} value={email}/>
+            <TextInput placeholder="Send to" onChange={(e) => setTo(e.target.value)} value={to}/>
 
             <Button onClick={addUser}>Add</Button>
             <Button onClick={startCall}>Call</Button>
 
             {incomingCall && (
                 <div>
-                    <p>Incoming call from {caller}</p>
+                    <p>Incoming call from {incomingCall}</p>
                     <Button onClick={acceptCall}>Accept</Button>
-                    <Button onClick={rejectCall}>Decline</Button>
+                    <Button onClick={() => setIncomingCall(null)}>Decline</Button>
                 </div>
             )}
 
