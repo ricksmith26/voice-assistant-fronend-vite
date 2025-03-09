@@ -13,7 +13,6 @@ import { getImagesRequest } from './api/imageApi';
 import { getPatient } from './api/PatientApi';
 import Button from './components/Button/Button';
 import mySound from "./assets/sounds/start_up.mp3";
-import { WebRTCTest } from './components/WebRTC/WebRTCTest';
 import { WebRTC } from './components/WebRTC/WebRTC';
 
 export type User = {
@@ -118,6 +117,7 @@ function App() {
         if (message.type === 'WEBRTC') {
           console.log(message.message, '<><>')
           setWebRTCMessage(message)
+          setMode('WEBRTC')
         }
 
       })
@@ -184,17 +184,9 @@ function App() {
           <Winston email={user?.email} mode={mode}></Winston>
         </div>}
 
-      {/* {mode === 'idle' && user && <Carousel images={photos} />} */}
-      {mode === 'idle' && user && patientContacts.length > 0 && <WebRTC socket={socket} patientEmail={user.email} patientContacts={patientContacts}/>}
-      {/* {mode === 'TESTWEBRTC' && user && <WebRTCTest socket={socket} />} */}
-
-      {/* <Button
-        onClick={() => setMode('TESTWEBRTC')}
-      >
-        TESTWEBRTC
-      </Button>  */}
-      {/* <audio id="audio_tag" src={mySound} /> */}
-
+      {mode === 'idle' && user && <Carousel images={photos} />}
+      {mode === 'WEBRTC' && user && <WebRTC socket={socket} patientEmail={user.email} patientContacts={patientContacts} />}
+      {mode !== 'WEBRTC' && <Button onClick={() => setMode('WEBRTC')}>WEBRTC</Button>}
     </div>
   )
 }

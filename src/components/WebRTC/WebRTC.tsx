@@ -3,6 +3,9 @@ import { TextInput } from "../formComponents/TextInput/TextInput";
 import Button from "../Button/Button";
 import { IncomingCall } from "./IncomingCall/IncomingCall";
 import './WebRTC.css'
+import { Videos } from "./Videos/Videos";
+import { OutgoingCall } from "./OutgoingCall/OutgoingCall";
+
 
 interface WebRTCProps {
     socket: any;
@@ -14,7 +17,9 @@ export const WebRTC = ({ socket, patientEmail, patientContacts }: WebRTCProps) =
     const [email, setEmail] = useState<string>(patientEmail);
     const [to, setTo] = useState<string>(patientContacts[0].telecom[1].value);
     const [incomingCall, setIncomingCall] = useState<boolean>(false);
-    const [caller, setCaller] = useState<string | null>(`${patientContacts[0].name[0].given[0]} ${patientContacts[0].name[0].family}`);
+    const [outgoingCall, setOutgoingCall] = useState<boolean>(false)
+    const [caller, setCaller] = useState<string | null>();
+    const [incomingCallerName, setInComingCallerName] = useState(`${patientContacts[0].name[0].given[0]} ${patientContacts[0].name[0].family}`)
     const [receivedOffer, setReceivedOffer] = useState<RTCSessionDescriptionInit | null>(null);
     const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
     const [areVisible, setAreVisible] = useState<boolean>(false)
@@ -38,12 +43,18 @@ export const WebRTC = ({ socket, patientEmail, patientContacts }: WebRTCProps) =
 
         socket.on("answer", async ({ answer }: any) => {
             console.log("Received Answer");
+            setOutgoingCall(false)
             setAreVisible(true)
             if (peerConnection) {
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
             }
         });
+        socket.on("hangup", ({toEmail}: any) => {
 
+            console.log("Call ended by the other user.");
+            if (to !== toEmail) hangupCall();
+        });
+        
         socket.on("iceCandidate", ({ candidate }: any) => {
             if (peerConnection) {
                 peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
@@ -54,6 +65,7 @@ export const WebRTC = ({ socket, patientEmail, patientContacts }: WebRTCProps) =
             socket.off("incomingCall");
             socket.off("offer");
             socket.off("answer");
+            socket.off("hangup");
             socket.off("iceCandidate");
         };
     }, [socket, peerConnection]);
@@ -64,11 +76,10 @@ export const WebRTC = ({ socket, patientEmail, patientContacts }: WebRTCProps) =
 
     const startCall = async () => {
         if (!to) return;
-
+        setOutgoingCall(true)
         const pc = createPeerConnection(to);
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
-
         socket.emit("callUser", { toEmail: to, offer });
     };
 
@@ -91,9 +102,65 @@ export const WebRTC = ({ socket, patientEmail, patientContacts }: WebRTCProps) =
     };
 
     const rejectCall = () => {
+        console.log("Hanging up...");
+    
+        // Notify the other peer about the hangup
+
+        if (to) {
+            socket.emit("hangup", { toEmail: to });
+        }
+    
+        // Close the peer connection
+        if (peerConnection) {
+            peerConnection.close();
+            setPeerConnection(null);
+        }
+    
+        // Stop all local media tracks
+        if (localStreamRef.current) {
+            localStreamRef.current.getTracks().forEach(track => track.stop());
+            localStreamRef.current = null;
+        }
+    
+        // Reset state
         setIncomingCall(false);
+        setOutgoingCall(false);
         setCaller(null);
         setReceivedOffer(null);
+        setAreVisible(false);
+        
+        console.log("Call ended.");
+    };
+
+
+    const hangupCall = () => {
+        console.log("Hanging up...");
+    
+        // Notify the other peer about the hangup
+        if (caller) {
+            socket.emit("hangup", { toEmail: caller });
+        }
+    
+        // Close the peer connection
+        if (peerConnection) {
+            peerConnection.close();
+            setPeerConnection(null);
+        }
+    
+        // Stop all local media tracks
+        if (localStreamRef.current) {
+            localStreamRef.current.getTracks().forEach(track => track.stop());
+            localStreamRef.current = null;
+        }
+    
+        // Reset state
+        setIncomingCall(false);
+        setOutgoingCall(false);
+        setCaller(null);
+        setReceivedOffer(null);
+        setAreVisible(false);
+        
+        console.log("Call ended.");
     };
 
     const createPeerConnection = (peerEmail: string): RTCPeerConnection => {
@@ -127,41 +194,15 @@ export const WebRTC = ({ socket, patientEmail, patientContacts }: WebRTCProps) =
             }
         });
         addUser()
+
     }, []);
 
     return (
         <div>
-            {/* <TextInput placeholder="Your Email" onChange={(e) => setEmail(e.target.value)} />
-            <TextInput placeholder="Send to" onChange={(e) => setTo(e.target.value)} />
-
-            <Button onClick={addUser}>Add</Button>
-            <Button onClick={startCall}>Call</Button> */}
-            <IncomingCall incomingCall={incomingCall} caller={caller || ''} acceptCall={acceptCall} rejectCall={rejectCall} />
-            {/* {incomingCall && (
-                <div style={{ position: 'fixed', top: 0, left: 0, minHeight: '100%', minWidth: '100%', backgroundColor: 'black'}}>
-                    <p>Incoming call from {caller}</p>
-                    <Button onClick={acceptCall}>Accept</Button>
-                    <Button onClick={rejectCall}>Decline</Button>
-                </div>
-            )} */}
-            <div style={{ visibility: areVisible ? 'visible' : 'hidden' }}>
-                <div style={{ position: 'fixed', top: 0, left: 0 }}>
-                    <video ref={remoteVideoRef} autoPlay playsInline
-                        style={{
-                            position: 'fixed',
-                            right: 0,
-                            bottom: 0,
-                            minWidth: '100%',
-                            minHeight: '100%',
-                            zIndex: -1
-                        }}></video>
-                </div>
-                <div className="localPhoto">
-                    <video ref={localVideoRef} autoPlay playsInline muted style={{ height: '150px', zIndex: 100 }}></video>
-                </div>
-            </div>
-
-            <Button onClick={startCall}>{`Call ${to}`}</Button>
+            <OutgoingCall isOutgoing={outgoingCall} hangupCall={rejectCall}/>
+            <IncomingCall incomingCall={incomingCall} caller={incomingCallerName || ''} acceptCall={acceptCall} rejectCall={rejectCall} />
+            <Videos areVisible={areVisible} localVideoRef={localVideoRef} remoteVideoRef={remoteVideoRef}/>
+            {!areVisible && <Button onClick={startCall}>{`Call ${to}`}</Button>}
         </div >
     );
 };

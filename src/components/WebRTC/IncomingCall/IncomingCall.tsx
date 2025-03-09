@@ -22,8 +22,8 @@ export const IncomingCall = ({ incomingCall, caller, acceptCall, rejectCall }: I
                         <h2>{caller}</h2>
                     </div>
                     <div className="callButtons">
-                        <img src={answer} style={{ height: '75px' }} onClick={() => acceptCall()}/>
-                        <img src={decline} style={{ height: '75px' }} onClick={() => rejectCall()}/>
+                        <img src={answer} style={{ height: '75px', cursor: 'pointer' }} onClick={() => acceptCall()}/>
+                        <img src={decline} style={{ height: '75px', cursor: 'pointer' }} onClick={() => rejectCall()}/>
                     </div>
                 </div>
             )}
