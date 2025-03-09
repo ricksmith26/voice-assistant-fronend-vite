@@ -17,6 +17,7 @@ export const WebRTCTest = ({ socket }: WebRTCProps) => {
     const localStreamRef = useRef<MediaStream | null>(null);
     const [play, {stop}] = useSound(outgoingCallSound)
     const [vidOffer, setVidOffer] = useState<any>()
+    const [showVideo, setShowVideo] = useState(false)
 
     useEffect(() => {
         socket.on("incomingCall", ({ fromEmail }: {fromEmail: string} ) => {

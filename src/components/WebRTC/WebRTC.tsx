@@ -1,19 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { TextInput } from "../formComponents/TextInput/TextInput";
 import Button from "../Button/Button";
+import { IncomingCall } from "./IncomingCall/IncomingCall";
+import './WebRTC.css'
 
 interface WebRTCProps {
     socket: any;
+    patientContacts: any;
+    patientEmail: string;
 }
 
-export const WebRTC = ({ socket }: WebRTCProps) => {
-    const [email, setEmail] = useState<string>("");
-    const [to, setTo] = useState<string>("");
+export const WebRTC = ({ socket, patientEmail, patientContacts }: WebRTCProps) => {
+    const [email, setEmail] = useState<string>(patientEmail);
+    const [to, setTo] = useState<string>(patientContacts[0].telecom[1].value);
     const [incomingCall, setIncomingCall] = useState<boolean>(false);
-    const [caller, setCaller] = useState<string | null>(null);
+    const [caller, setCaller] = useState<string | null>(`${patientContacts[0].name[0].given[0]} ${patientContacts[0].name[0].family}`);
     const [receivedOffer, setReceivedOffer] = useState<RTCSessionDescriptionInit | null>(null);
     const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
-    
+    const [areVisible, setAreVisible] = useState<boolean>(false)
+
     const localVideoRef = useRef<HTMLVideoElement>(null);
     const remoteVideoRef = useRef<HTMLVideoElement>(null);
     const localStreamRef = useRef<MediaStream | null>(null);
@@ -33,6 +38,7 @@ export const WebRTC = ({ socket }: WebRTCProps) => {
 
         socket.on("answer", async ({ answer }: any) => {
             console.log("Received Answer");
+            setAreVisible(true)
             if (peerConnection) {
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
             }
@@ -80,7 +86,7 @@ export const WebRTC = ({ socket }: WebRTCProps) => {
         // **Now, Create and Send an Answer**
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
-        
+        setAreVisible(true)
         socket.emit("answer", { to: caller, answer });
     };
 
@@ -120,32 +126,42 @@ export const WebRTC = ({ socket }: WebRTCProps) => {
                 localVideoRef.current.srcObject = stream;
             }
         });
+        addUser()
     }, []);
 
     return (
         <div>
-            <TextInput placeholder="Your Email" onChange={(e) => setEmail(e.target.value)} />
+            {/* <TextInput placeholder="Your Email" onChange={(e) => setEmail(e.target.value)} />
             <TextInput placeholder="Send to" onChange={(e) => setTo(e.target.value)} />
 
             <Button onClick={addUser}>Add</Button>
-            <Button onClick={startCall}>Call</Button>
-
-            {incomingCall && (
-                <div>
+            <Button onClick={startCall}>Call</Button> */}
+            <IncomingCall incomingCall={incomingCall} caller={caller || ''} acceptCall={acceptCall} rejectCall={rejectCall} />
+            {/* {incomingCall && (
+                <div style={{ position: 'fixed', top: 0, left: 0, minHeight: '100%', minWidth: '100%', backgroundColor: 'black'}}>
                     <p>Incoming call from {caller}</p>
                     <Button onClick={acceptCall}>Accept</Button>
                     <Button onClick={rejectCall}>Decline</Button>
                 </div>
-            )}
+            )} */}
+            <div style={{ visibility: areVisible ? 'visible' : 'hidden' }}>
+                <div style={{ position: 'fixed', top: 0, left: 0 }}>
+                    <video ref={remoteVideoRef} autoPlay playsInline
+                        style={{
+                            position: 'fixed',
+                            right: 0,
+                            bottom: 0,
+                            minWidth: '100%',
+                            minHeight: '100%',
+                            zIndex: -1
+                        }}></video>
+                </div>
+                <div className="localPhoto">
+                    <video ref={localVideoRef} autoPlay playsInline muted style={{ height: '150px', zIndex: 100 }}></video>
+                </div>
+            </div>
 
-            <div>
-                <h3>Local Video</h3>
-                <video ref={localVideoRef} autoPlay playsInline></video>
-            </div>
-            <div>
-                <h3>Remote Video</h3>
-                <video ref={remoteVideoRef} autoPlay playsInline></video>
-            </div>
-        </div>
+            <Button onClick={startCall}>{`Call ${to}`}</Button>
+        </div >
     );
 };

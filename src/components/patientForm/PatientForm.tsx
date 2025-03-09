@@ -68,9 +68,9 @@ export const PatientForm = ({ email, setMode }: PatientFormProps) => {
     }, [currentPage])
 
     useEffect(() => {
-        if (email.length > 0) {
-            setCurrentPage(1)
-        }
+        // if (email.length > 0) {
+        //     setCurrentPage(1)
+        // }
     }, [email])
 
 

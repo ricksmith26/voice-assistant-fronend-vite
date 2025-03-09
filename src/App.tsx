@@ -102,6 +102,7 @@ function App() {
 
   useEffect(() => {
     try {
+      play()
       setLoading(true)
       startUp()
       setLoading(false)
@@ -184,7 +185,7 @@ function App() {
         </div>}
 
       {/* {mode === 'idle' && user && <Carousel images={photos} />} */}
-      {mode === 'idle' && user && <WebRTC socket={socket} />}
+      {mode === 'idle' && user && patientContacts.length > 0 && <WebRTC socket={socket} patientEmail={user.email} patientContacts={patientContacts}/>}
       {/* {mode === 'TESTWEBRTC' && user && <WebRTCTest socket={socket} />} */}
 
       {/* <Button
