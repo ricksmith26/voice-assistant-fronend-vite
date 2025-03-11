@@ -14,37 +14,28 @@ import { getPatient } from './api/PatientApi';
 import Button from './components/Button/Button';
 import mySound from "./assets/sounds/start_up.mp3";
 import { WebRTC } from './components/WebRTC/WebRTC';
-
-export type User = {
-  _id: string;
-  googleId: string;
-  name: string;
-  email: string;
-  picture: string;
-  createdAt: string; // ISO date string
-  __v: number;
-  accessToken?: string; // Optional if you don't always return it
-};
+import { User } from './types/User';
+import { ModesEnum } from './types/Modes';
 
 function App() {
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [fooEvents, setFooEvents] = useState([] as any[]);
   const [webRTCMessage, setWebRTCMessage] = useState<any>()
   // 
-  const [count, setCount] = useState(0)
   const [mode, setMode] = useState('idle')
   const [photos, setPhotos] = useState([] as any[])
-  const [index, setIndex] = useState(0);
   const [user, setUser] = useState<User | null>(null);
   const [patientContacts, setPatientContacts] = useState([])
   const [isLoading, setLoading] = useState(true)
   const [play, { stop }] = useSound(mySound);
+  const [caller, setCaller] = useState('');
+  const [isCallingOutbound, setIsCallingOutbound] = useState(false)
+  const [answered, setAnswered] = useState(false)
 
 
   const getUser = async () => {
     try {
       const authUser = await checkAuth()
       localStorage.setItem('email', authUser.email)
+      socket.emit("register", authUser.email);
       setUser(authUser)
       // socket.emit('register', authUser?.email);
       return authUser
@@ -75,20 +66,21 @@ function App() {
   const startUp = useCallback(async () => {
     try {
       await getUser();
+
     } catch (error) {
-      setMode('login')
+      setMode(ModesEnum.LOGIN)
       throw error
     }
     try {
       await getPatient();
     } catch (error) {
-      setMode('patientForm')
+      setMode(ModesEnum.PATIENT_FORM)
       throw error
     }
     try {
       await getContacts()
     } catch (error) {
-      setMode('patientForm')
+      setMode(ModesEnum.PATIENT_FORM)
       throw error
     }
     try {
@@ -106,18 +98,27 @@ function App() {
       startUp()
       setLoading(false)
       function onConnect() {
-        setIsConnected(true);
+        // setIsConnected(true);
       }
       function onDisconnect() {
-        setIsConnected(false);
+        // setIsConnected(false);
       }
       socket.on('connect', onConnect);
       socket.on('disconnect', onDisconnect);
       socket.on('message', (message: any) => {
-        if (message.type === 'WEBRTC') {
+        const {callerName, recipiantName} = message
+        if (message.type === ModesEnum.WEBRTC) {
+          if (message.toEmail) {
+            setCaller(recipiantName)
+            setIsCallingOutbound(true)
+          }
+          else {
+            setCaller(callerName)
+          }
           console.log(message.message, '<><>')
           setWebRTCMessage(message)
-          setMode('WEBRTC')
+          setMode(ModesEnum.WEBRTC)
+
         }
 
       })
@@ -155,16 +156,22 @@ function App() {
 
       if (lastResult && typeof lastResult === "object") {
         const transcript = lastResult.transcript.toLowerCase().trim();
+        console.log(transcript)
 
-        if (mode === "winston" && transcript.includes("stop listening")) {
-          setMode("idle");
+        if (mode === ModesEnum.WINSTON && transcript.includes("stop listening")) {
+          console.log("set to idle");
+          setMode(ModesEnum.IDLE);
+        }
+        if (mode === ModesEnum.WINSTON && transcript.includes("answer") && isCallingOutbound) {
+          setAnswered(true)
           console.log("set to idle");
         }
-        if (transcript.includes("winston")) {
-          setMode("winston");
+        if (transcript.includes(ModesEnum.WINSTON)) {
+          setMode(ModesEnum.WINSTON);
           console.log("set to winston");
         }
       }
+      
     } catch (error) {
       console.log("Speech Recognition Error:", error)
     }
@@ -175,18 +182,27 @@ function App() {
   return (
     <div className='app'>
 
-      {mode === 'login' && <Login />}
+      {mode === ModesEnum.LOGIN && <Login />}
 
-      {mode === 'patientForm' && <PatientForm email={user?.email || ''} setMode={setMode} />}
+      {mode === ModesEnum.PATIENT_FORM && <PatientForm email={user?.email || ''} setMode={setMode} />}
 
-      {mode === 'winston' &&
+      {mode === ModesEnum.WINSTON &&
         <div className='assistant-constainer'>
           <Winston email={user?.email} mode={mode}></Winston>
         </div>}
 
       {mode === 'idle' && user && <Carousel images={photos} />}
-      {mode === 'WEBRTC' && user && <WebRTC socket={socket} patientEmail={user.email} patientContacts={patientContacts} />}
-      {mode !== 'WEBRTC' && <Button onClick={() => setMode('WEBRTC')}>WEBRTC</Button>}
+
+      {mode === 'WEBRTC' && user &&
+        <WebRTC
+          setMode={setMode}
+          answered={answered}
+          isCallingOutbound={isCallingOutbound}
+          socket={socket}
+          patientEmail={user.email}
+          patientContacts={(patientContacts[0] as any).telecom[1].value} />}
+
+      {/* {mode !== 'WEBRTC' && <Button onClick={() => setMode('WEBRTC')}>WEBRTC</Button>} */}
     </div>
   )
 }

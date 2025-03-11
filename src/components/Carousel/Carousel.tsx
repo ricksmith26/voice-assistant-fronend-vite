@@ -59,9 +59,9 @@ const Carousel: React.FC<CarouselProps> = ({ images, autoSlide = true, autoSlide
 
   return (
     <div className="container__slider">
-      <button className="slider__btn-prev" onClick={prevSlide}>
+      {/* <button className="slider__btn-prev" onClick={prevSlide}>
         {"<"}
-      </button>
+      </button> */}
 
       <div
         className="slider__track"
@@ -77,11 +77,11 @@ const Carousel: React.FC<CarouselProps> = ({ images, autoSlide = true, autoSlide
         ))}
       </div>
 
-      <button className="slider__btn-next" onClick={nextSlide}>
+      {/* <button className="slider__btn-next" onClick={nextSlide}>
         {">"}
-      </button>
+      </button> */}
 
-      <div className="container__slider__links">
+      {/* <div className="container__slider__links">
         {images.map((_, index) => (
           <button
             key={index}
@@ -91,7 +91,7 @@ const Carousel: React.FC<CarouselProps> = ({ images, autoSlide = true, autoSlide
             onClick={() => setCurrentIndex(index + 1)}
           />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };

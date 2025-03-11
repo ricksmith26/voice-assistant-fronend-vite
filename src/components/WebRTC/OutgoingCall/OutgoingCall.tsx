@@ -1,5 +1,8 @@
 import "./outgoingCall.css"
 import declineIcon from "../IncomingCall/decline.svg"
+import { useEffect } from "react";
+import outgoingCallSound from '../../../assets/sounds/phone-outgoing-call-72202.mp3';
+import useSound from "use-sound";
 
 
 interface OutgoingCallProps {
@@ -8,6 +11,12 @@ interface OutgoingCallProps {
 }
 
 export const OutgoingCall = ({ isOutgoing, hangupCall }: OutgoingCallProps) => {
+    // const [play, {stop}] = useSound(outgoingCallSound)
+    // if (isOutgoing) play()
+    // const hangUpandStopSound = () => {
+    //     hangupCall()
+    //     stop()
+    // }
     return (
         <>
             {isOutgoing

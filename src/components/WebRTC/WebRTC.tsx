@@ -5,24 +5,31 @@ import { IncomingCall } from "./IncomingCall/IncomingCall";
 import './WebRTC.css'
 import { Videos } from "./Videos/Videos";
 import { OutgoingCall } from "./OutgoingCall/OutgoingCall";
+import outgoingCallSound from '../../assets/sounds/phone-outgoing-call-72202.mp3';
+import useSound from "use-sound";
+import { ModesEnum } from "../../types/Modes";
 
 
 interface WebRTCProps {
     socket: any;
     patientContacts: any;
     patientEmail: string;
+    isCallingOutbound: boolean;
+    answered: boolean;
+    setMode: Function;
 }
 
-export const WebRTC = ({ socket, patientEmail, patientContacts }: WebRTCProps) => {
+export const WebRTC = ({ socket, patientEmail, patientContacts, isCallingOutbound, setMode, answered = false, }: WebRTCProps) => {
     const [email, setEmail] = useState<string>(patientEmail);
-    const [to, setTo] = useState<string>(patientContacts[0].telecom[1].value);
+    const [to, setTo] = useState<string>(patientContacts);
     const [incomingCall, setIncomingCall] = useState<boolean>(false);
     const [outgoingCall, setOutgoingCall] = useState<boolean>(false)
     const [caller, setCaller] = useState<string | null>();
-    const [incomingCallerName, setInComingCallerName] = useState(`${patientContacts[0].name[0].given[0]} ${patientContacts[0].name[0].family}`)
+    const [incomingCallerName, setInComingCallerName] = useState(`***`)
     const [receivedOffer, setReceivedOffer] = useState<RTCSessionDescriptionInit | null>(null);
     const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
     const [areVisible, setAreVisible] = useState<boolean>(false)
+    const [play, {stop}] = useSound(outgoingCallSound)
 
     const localVideoRef = useRef<HTMLVideoElement>(null);
     const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -49,8 +56,12 @@ export const WebRTC = ({ socket, patientEmail, patientContacts }: WebRTCProps) =
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
             }
         });
-        socket.on("hangup", ({toEmail}: any) => {
-
+        socket.on("hangup", async({toEmail}: any) => {
+            setTimeout(() => {
+                setMode(ModesEnum.IDLE)
+            }, 1000)
+            
+            await stop()
             console.log("Call ended by the other user.");
             if (to !== toEmail) hangupCall();
         });
@@ -60,6 +71,7 @@ export const WebRTC = ({ socket, patientEmail, patientContacts }: WebRTCProps) =
                 peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
             }
         });
+        
 
         return () => {
             socket.off("incomingCall");
@@ -71,11 +83,12 @@ export const WebRTC = ({ socket, patientEmail, patientContacts }: WebRTCProps) =
     }, [socket, peerConnection]);
 
     const addUser = () => {
-        socket.emit("register", email);
+        // socket.emit("register", email);
     };
 
     const startCall = async () => {
         if (!to) return;
+        play()
         setOutgoingCall(true)
         const pc = createPeerConnection(to);
         const offer = await pc.createOffer();
@@ -128,7 +141,9 @@ export const WebRTC = ({ socket, patientEmail, patientContacts }: WebRTCProps) =
         setCaller(null);
         setReceivedOffer(null);
         setAreVisible(false);
-        
+        setTimeout(() => {
+            setMode(ModesEnum.IDLE)
+        }, 1000)
         console.log("Call ended.");
     };
 
@@ -194,15 +209,22 @@ export const WebRTC = ({ socket, patientEmail, patientContacts }: WebRTCProps) =
             }
         });
         addUser()
+        setTimeout(() => {
+            if (isCallingOutbound) startCall()
+        }, 1000)
 
     }, []);
+
+    useEffect(() => {
+        if (answered) acceptCall()
+    }, [answered])
 
     return (
         <div>
             <OutgoingCall isOutgoing={outgoingCall} hangupCall={rejectCall}/>
             <IncomingCall incomingCall={incomingCall} caller={incomingCallerName || ''} acceptCall={acceptCall} rejectCall={rejectCall} />
             <Videos areVisible={areVisible} localVideoRef={localVideoRef} remoteVideoRef={remoteVideoRef}/>
-            {!areVisible && <Button onClick={startCall}>{`Call ${to}`}</Button>}
+            {/* {!areVisible && <Button onClick={startCall}>{`Call ${to}`}</Button>} */}
         </div >
     );
 };
