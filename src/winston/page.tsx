@@ -117,7 +117,8 @@ function ControlBar({ onConnectButtonClicked, agentState }: any) {
   }, [krispEnabled]); // ✅ Only enable Krisp when krispEnabled is true
 
   return (
-    <div className="relative h-[100px]">
+    <div className="winstonContainer">
+      <div className="relative h-[100px]">
       <AnimatePresence>
         {agentState === "disconnected" && (
           <motion.button
@@ -153,6 +154,8 @@ function ControlBar({ onConnectButtonClicked, agentState }: any) {
         )}
       </AnimatePresence>
     </div>
+    </div>
+    
   );
 }
 

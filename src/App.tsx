@@ -156,7 +156,12 @@ function App() {
 
       if (lastResult && typeof lastResult === "object") {
         const transcript = lastResult.transcript.toLowerCase().trim();
-        console.log(transcript)
+        console.log(transcript, '<<<<<')
+
+        if (mode === ModesEnum.WEBRTC && transcript.includes("stop listening")) {
+          console.log("set to idle");
+          setMode(ModesEnum.IDLE);
+        }
 
         if (mode === ModesEnum.WINSTON && transcript.includes("stop listening")) {
           console.log("set to idle");
