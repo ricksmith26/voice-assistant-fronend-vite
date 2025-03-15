@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_URL } from "../config/config";
 
 export const getImagesRequest = async () => {
     const response = await axios
-        .get(`http://localhost:3001/images/all`, { withCredentials: true })
+        .get(`${API_URL}/images/all`, { withCredentials: true })
     return response.data.images;
 }

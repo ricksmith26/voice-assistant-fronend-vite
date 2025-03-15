@@ -67,6 +67,10 @@ export const PatientForm = ({ email, setMode }: PatientFormProps) => {
         console.log(currentPage)
     }, [currentPage])
 
+    useEffect(( ) => {
+        console.log(email)
+    }, [email])
+
 
     return (
         <div className="patientFormBackground">

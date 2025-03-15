@@ -5,10 +5,11 @@ import { useEffect, useState } from 'react';
 import useSound from 'use-sound';
 
 import start_up from '../assets/sounds/start_up.mp3';
+import { API_URL } from '../config/config';
 
 
 
-export const apiUrl = process.env.api_url ? process.env.api_url : "http://localhost:3001/auth/google";
+export const apiUrl = process.env.api_url ? process.env.api_url : `${API_URL}/auth/google`;
 
 const Login = () => {
     const [loaded, setLoaded] = useState(false);

@@ -1,8 +1,9 @@
 import axios from "axios";
+import { API_URL } from "../config/config";
 
 export const axiosIns = () => {
     return axios.create({
-        baseURL: 'http://localhost:3001',
+        baseURL: `${API_URL}`,
         timeout: 1000,
         headers: {'X-Custom-Header': 'foobar'}
       });

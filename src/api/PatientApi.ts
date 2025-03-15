@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_SERVER; // Ensure your API URL is set in env variables
+const VITE_API_URL  = import.meta.env.API_URL; // Ensure your API URL is set in env variables
+console.log(VITE_API_URL, "<<VITE_API_URL<")
 
 const convertToFhirPatient = (formData: any) => ({
     resourceType: "Patient",
@@ -54,7 +55,7 @@ export const createPatient = async (formData: {
     console.log("📤 Sending FHIR Patient:", fhirPatient);
 
     // ✅ Send the FHIR Patient to your API
-    const response = await axios.post(`http://localhost:3001/patients`, fhirPatient, {
+    const response = await axios.post(`${VITE_API_URL}/patients`, fhirPatient, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -70,6 +71,6 @@ export const createPatient = async (formData: {
 };
 
 export const getPatient = async() => {
-  const response = await axios.get("http://localhost:3001/patients/email",{ withCredentials: true })
+  const response = await axios.get(`${VITE_API_URL}/patients/email`,{ withCredentials: true })
   return response.data
 }

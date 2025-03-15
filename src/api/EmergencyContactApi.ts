@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_SERVER;
+const API_URL = import.meta.env.API_URL;
 
 // Define a TypeScript interface for related persons
 interface RelatedPerson {
@@ -59,7 +59,7 @@ export const createRelatedPersons = async (patientId: string, relatedPersons: Re
     console.log("📤 Sending FHIR RelatedPersons:", fhirRelatedPersons);
 
     // ✅ Send data to API with correct payload structure
-    const response = await axios.post(`http://localhost:3001/relatedPerson`, 
+    const response = await axios.post(`${API_URL}/relatedPerson`, 
       fhirRelatedPersons, // 👈 Wrap in an object
       {
         headers: { "Content-Type": "application/json" },
