@@ -3,8 +3,6 @@ import logo from "../assets/logos/bigitSmallLogo.jpg"
 import Button from "../components/Button/Button";
 import { useEffect, useState } from 'react';
 import useSound from 'use-sound';
-
-import start_up from '../assets/sounds/start_up.mp3';
 import { API_URL } from '../config/config';
 
 
