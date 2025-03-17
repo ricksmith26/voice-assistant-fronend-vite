@@ -1,4 +1,4 @@
-import Button from "../Button/Button"
+// import Button from "../Button/Button"
 import './patientForm.css'
 import { PersonalDetails } from "./patientFormComponents/PersonalDetails"
 import { useEffect, useState } from "react"

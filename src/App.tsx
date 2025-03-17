@@ -1,33 +1,30 @@
 // import 'dotenv/config'
 import { useCallback, useEffect, useState } from 'react'
 import './App.css'
-import useSound from 'use-sound';
+// import useSound from 'use-sound';
 import Winston from './winston/page'
 import useSpeechToText from 'react-hook-speech-to-text';
 import Carousel from './components/Carousel/Carousel';
 import Login from './login/Login';
-import { socket } from './socket';
+import  socket  from './socket';
 import { PatientForm } from './components/patientForm/PatientForm';
 import { checkAuth } from './api/AuthApi';
 import { contactRequest } from './api/ContactApi';
 import { getImagesRequest } from './api/imageApi';
 import { getPatient } from './api/PatientApi';
-import Button from './components/Button/Button';
-import mySound from "./assets/sounds/start_up.mp3";
+// import Button from './components/Button/Button';
+// import mySound from "./assets/sounds/start_up.mp3";
 import { WebRTC } from './components/WebRTC/WebRTC';
 import { User } from './types/User';
 import { ModesEnum } from './types/Modes';
 
 function App() {
-  const [webRTCMessage, setWebRTCMessage] = useState<any>()
+  // const [webRTCMessage, setWebRTCMessage] = useState<any>()
   // 
   const [mode, setMode] = useState('idle')
   const [photos, setPhotos] = useState([] as any[])
   const [user, setUser] = useState<User | null>(null);
   const [patientContacts, setPatientContacts] = useState([])
-  const [isLoading, setLoading] = useState(true)
-  const [play, { stop }] = useSound(mySound);
-  const [caller, setCaller] = useState('');
   const [isCallingOutbound, setIsCallingOutbound] = useState(false)
   const [answered, setAnswered] = useState(false)
 
@@ -94,10 +91,8 @@ function App() {
 
   useEffect(() => {
     try {
-      play()
-      setLoading(true)
+      // play()
       startUp()
-      setLoading(false)
       function onConnect() {
         // setIsConnected(true);
       }
@@ -107,23 +102,22 @@ function App() {
       socket.on('connect', onConnect);
       socket.on('disconnect', onDisconnect);
       socket.on('message', (message: any) => {
-        const {callerName, recipiantName} = message
+        // const {callerName, recipiantName} = message
         if (message.type === ModesEnum.WEBRTC) {
           if (message.toEmail) {
-            setCaller(recipiantName)
+            // setCaller(recipiantName)
             setIsCallingOutbound(true)
           }
           else {
-            setCaller(callerName)
+            // setCaller(callerName)
           }
           console.log(message.message, '<><>')
-          setWebRTCMessage(message)
+          // setWebRTCMessage(message)
           setMode(ModesEnum.WEBRTC)
 
         }
 
       })
-      setLoading(false)
       return () => {
         socket.off('connect', onConnect);
         socket.off('disconnect', onDisconnect);
@@ -139,7 +133,7 @@ function App() {
     isRecording,
     results,
     startSpeechToText,
-    stopSpeechToText,
+    // stopSpeechToText,
   } = useSpeechToText({
     continuous: true,
     useLegacyResults: false

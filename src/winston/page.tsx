@@ -7,11 +7,11 @@ import {
   VoiceAssistantControlBar,
   AgentState,
   DisconnectButton,
-  VideoConference
+  // VideoConference
 } from "@livekit/components-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { MediaDeviceFailure, Room, RpcError, RpcInvocationData } from "livekit-client";
-import { useRoomContext } from "@livekit/components-react";
+import { useCallback, useEffect, useState } from "react";
+import { MediaDeviceFailure} from "livekit-client";
+// import { useRoomContext } from "@livekit/components-react";
 import { NoAgentNotification } from "../components/NoAgentNotification";
 import { CloseIcon } from "../components/CloseIcon";
 import { useKrispNoiseFilter } from "@livekit/components-react/krisp";

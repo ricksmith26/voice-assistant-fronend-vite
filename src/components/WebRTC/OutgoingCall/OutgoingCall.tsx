@@ -1,8 +1,8 @@
 import "./outgoingCall.css"
 import declineIcon from "../IncomingCall/decline.svg"
-import { useEffect } from "react";
-import outgoingCallSound from '../../../assets/sounds/phone-outgoing-call-72202.mp3';
-import useSound from "use-sound";
+// import { useEffect } from "react";
+// import outgoingCallSound from '../../../assets/sounds/phone-outgoing-call-72202.mp3';
+// import useSound from "use-sound";
 
 
 interface OutgoingCallProps {

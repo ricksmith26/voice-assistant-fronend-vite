@@ -3,7 +3,7 @@ import Button from "../../Button/Button"
 import { TextInput } from "../../formComponents/TextInput/TextInput"
 import { Tile } from "../../Tile/Tile";
 import { ListedContacts } from "./ListedContacts";
-import { createRelatedPersons } from "../../../api/EmergencyContactApi";
+// import { createRelatedPersons } from "../../../api/EmergencyContactApi";
 
 type Contact = {
     Firstname: string;

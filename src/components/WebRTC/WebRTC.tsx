@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { TextInput } from "../formComponents/TextInput/TextInput";
-import Button from "../Button/Button";
+// import { TextInput } from "../formComponents/TextInput/TextInput";
+// import Button from "../Button/Button";
 import { IncomingCall } from "./IncomingCall/IncomingCall";
 import './WebRTC.css'
 import { Videos } from "./Videos/Videos";
@@ -19,13 +19,13 @@ interface WebRTCProps {
     setMode: Function;
 }
 
-export const WebRTC = ({ socket, patientEmail, patientContacts, isCallingOutbound, setMode, answered = false, }: WebRTCProps) => {
-    const [email, setEmail] = useState<string>(patientEmail);
-    const [to, setTo] = useState<string>(patientContacts);
+export const WebRTC = ({ socket,patientContacts, isCallingOutbound, setMode, answered = false, }: WebRTCProps) => {
+    // const [email, setEmail] = useState<string>(patientEmail);
+    // const [to, setTo] = useState<string>(patientContacts);
     const [incomingCall, setIncomingCall] = useState<boolean>(false);
     const [outgoingCall, setOutgoingCall] = useState<boolean>(false)
     const [caller, setCaller] = useState<string | null>();
-    const [incomingCallerName, setInComingCallerName] = useState(`***`)
+    // const [incomingCallerName, setInComingCallerName] = useState(`***`)
     const [receivedOffer, setReceivedOffer] = useState<RTCSessionDescriptionInit | null>(null);
     const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
     const [areVisible, setAreVisible] = useState<boolean>(false)
@@ -63,7 +63,7 @@ export const WebRTC = ({ socket, patientEmail, patientContacts, isCallingOutboun
             
             await stop()
             console.log("Call ended by the other user.");
-            if (to !== toEmail) hangupCall();
+            if (patientContacts !== toEmail) hangupCall();
         });
         
         socket.on("iceCandidate", ({ candidate }: any) => {
@@ -87,13 +87,13 @@ export const WebRTC = ({ socket, patientEmail, patientContacts, isCallingOutboun
     };
 
     const startCall = async () => {
-        if (!to) return;
+        if (!patientContacts) return;
         play()
         setOutgoingCall(true)
-        const pc = createPeerConnection(to);
+        const pc = createPeerConnection(patientContacts);
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
-        socket.emit("callUser", { toEmail: to, offer });
+        socket.emit("callUser", { toEmail: patientContacts, offer });
     };
 
     const acceptCall = async () => {
@@ -119,8 +119,8 @@ export const WebRTC = ({ socket, patientEmail, patientContacts, isCallingOutboun
     
         // Notify the other peer about the hangup
 
-        if (to) {
-            socket.emit("hangup", { toEmail: to });
+        if (patientContacts) {
+            socket.emit("hangup", { toEmail: patientContacts });
         }
     
         // Close the peer connection
@@ -222,7 +222,7 @@ export const WebRTC = ({ socket, patientEmail, patientContacts, isCallingOutboun
     return (
         <div>
             <OutgoingCall isOutgoing={outgoingCall} hangupCall={rejectCall}/>
-            <IncomingCall incomingCall={incomingCall} caller={incomingCallerName || ''} acceptCall={acceptCall} rejectCall={rejectCall} />
+            <IncomingCall incomingCall={incomingCall} caller={'***'} acceptCall={acceptCall} rejectCall={rejectCall} />
             <Videos areVisible={areVisible} localVideoRef={localVideoRef} remoteVideoRef={remoteVideoRef}/>
             {/* {!areVisible && <Button onClick={startCall}>{`Call ${to}`}</Button>} */}
         </div >

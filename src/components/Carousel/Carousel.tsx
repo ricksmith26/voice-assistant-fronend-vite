@@ -25,11 +25,11 @@ const Carousel: React.FC<CarouselProps> = ({ images, autoSlide = true, autoSlide
     setCurrentIndex((prevIndex) => prevIndex + 1);
   };
 
-  const prevSlide = () => {
-    if (displayImages.length === 0) return;
-    setIsTransitioning(true);
-    setCurrentIndex((prevIndex) => prevIndex - 1);
-  };
+  // const prevSlide = () => {
+  //   if (displayImages.length === 0) return;
+  //   setIsTransitioning(true);
+  //   setCurrentIndex((prevIndex) => prevIndex - 1);
+  // };
 
   // Auto-slide effect that starts immediately
   useEffect(() => {
