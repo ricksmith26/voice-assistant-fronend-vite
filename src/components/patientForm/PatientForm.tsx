@@ -42,6 +42,7 @@ export const PatientForm = ({ email, setMode }: PatientFormProps) => {
     const submitPatient = async () => {
         let patientData = patient;
         patientData.Email = email;
+        localStorage.setItem('email', email)
         console.log(patientData, email)
         try {
             const response = await createPatient(patientData)

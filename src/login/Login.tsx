@@ -4,6 +4,7 @@ import Button from "../components/Button/Button";
 import { useEffect, useState } from 'react';
 import useSound from 'use-sound';
 import { API_URL } from '../config/config';
+import { checkAuth } from '../api/AuthApi';
 
 
 
@@ -14,6 +15,7 @@ const Login = () => {
     const [play] = useSound('../assets/sounds/start_up.mp3');
 
     useEffect(() => {
+        console.log(localStorage.getItem('email'), '<<<<document.cookie<')
         setTimeout(() => {
             console.log('start music')
             play()
@@ -31,6 +33,7 @@ const Login = () => {
                 <div className="centered-container">
                     <div className="appearing-container" style={{opacity: loaded ? 1 : 0}}>
                         <Button onClick={() => window.location.href = apiUrl}>Login with Google</Button>
+                        <Button onClick={checkAuth}>Auth</Button>
                     </div>
                 </div>
 

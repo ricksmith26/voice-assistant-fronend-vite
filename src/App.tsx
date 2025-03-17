@@ -6,7 +6,7 @@ import Winston from './winston/page'
 import useSpeechToText from 'react-hook-speech-to-text';
 import Carousel from './components/Carousel/Carousel';
 import Login from './login/Login';
-import  socket  from './socket';
+import socket from './socket';
 import { PatientForm } from './components/patientForm/PatientForm';
 import { checkAuth } from './api/AuthApi';
 import { contactRequest } from './api/ContactApi';
@@ -17,6 +17,7 @@ import { getPatient } from './api/PatientApi';
 import { WebRTC } from './components/WebRTC/WebRTC';
 import { User } from './types/User';
 import { ModesEnum } from './types/Modes';
+
 
 function App() {
   // const [webRTCMessage, setWebRTCMessage] = useState<any>()
@@ -32,9 +33,12 @@ function App() {
   const getUser = async () => {
     try {
       const authUser = await checkAuth()
-      localStorage.setItem('email', authUser.email)
-      socket.emit("register", authUser.email);
-      setUser(authUser)
+      if (authUser) {
+        localStorage.setItem('email', authUser.email)
+        socket.emit("register", authUser.email);
+        setUser(authUser)
+      }
+
       // socket.emit('register', authUser?.email);
       return authUser
     } catch (error) {
@@ -92,6 +96,7 @@ function App() {
   useEffect(() => {
     try {
       // play()
+      localStorage.setItem('email', 'ricksmith69@gmail.com')
       startUp()
       function onConnect() {
         // setIsConnected(true);
@@ -171,7 +176,7 @@ function App() {
           console.log("set to winston");
         }
       }
-      
+
     } catch (error) {
       console.log("Speech Recognition Error:", error)
     }
