@@ -1,6 +1,7 @@
 // import 'dotenv/config'
 import { useCallback, useEffect, useState } from 'react'
 import './App.css'
+import {} from 'react-dom'
 // import useSound from 'use-sound';
 import Winston from './winston/page'
 import useSpeechToText from 'react-hook-speech-to-text';
@@ -17,6 +18,8 @@ import { getPatient } from './api/PatientApi';
 import { WebRTC } from './components/WebRTC/WebRTC';
 import { User } from './types/User';
 import { ModesEnum } from './types/Modes';
+import { useParams } from "react-router"
+import { AxiosProvider } from './providers/axiosProvider';
 
 
 function App() {
@@ -29,12 +32,10 @@ function App() {
   const [isCallingOutbound, setIsCallingOutbound] = useState(false)
   const [answered, setAnswered] = useState(false)
 
-
   const getUser = async () => {
     try {
       const authUser = await checkAuth()
       if (authUser) {
-        localStorage.setItem('email', authUser.email)
         socket.emit("register", authUser.email);
         setUser(authUser)
       }
@@ -93,10 +94,9 @@ function App() {
     }
   }, [])
 
+
   useEffect(() => {
     try {
-      // play()
-      localStorage.setItem('email', 'ricksmith69@gmail.com')
       startUp()
       function onConnect() {
         // setIsConnected(true);
@@ -183,8 +183,8 @@ function App() {
 
   }, [results, isRecording]); // Ensure it only starts when needed
 
-
   return (
+    <AxiosProvider>
     <div className='app'>
 
       {mode === ModesEnum.LOGIN && <Login />}
@@ -209,6 +209,7 @@ function App() {
 
       {/* {mode !== 'WEBRTC' && <Button onClick={() => setMode('WEBRTC')}>WEBRTC</Button>} */}
     </div>
+    </AxiosProvider>
   )
 }
 

@@ -48,15 +48,6 @@ export const EmergencyContacts = ({
     }
 
 
-    useEffect(() => {
-        console.log(contact, '<<<<<<<<<+++++')
-    }, [contact])
-
-    useEffect(() => {
-        console.log(contacts, "<adddedContacts<<<")
-    }, [contacts])
-
-
     return (
         <>
             <ListedContacts contacts={contacts} />

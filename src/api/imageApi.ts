@@ -1,8 +1,8 @@
 import axios from "axios";
 import { API_URL } from "../config/config";
+import axiosIns from "../providers/axiosIns";
 
 export const getImagesRequest = async () => {
-    const response = await axios
-        .get(`${API_URL}/images/all`, { withCredentials: true })
+    const response = await axiosIns.get(`${API_URL}/images/all`);
     return response.data.images;
 }

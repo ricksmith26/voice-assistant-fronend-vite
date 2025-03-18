@@ -1,4 +1,5 @@
 import axios from "axios";
+import axiosIns from "../providers/axiosIns";
 
 const API_URL = import.meta.env.API_URL;
 
@@ -59,7 +60,7 @@ export const createRelatedPersons = async (patientId: string, relatedPersons: Re
     console.log("📤 Sending FHIR RelatedPersons:", fhirRelatedPersons);
 
     // ✅ Send data to API with correct payload structure
-    const response = await axios.post(`${API_URL}/relatedPerson`, 
+    const response = await axiosIns.post(`${API_URL}/relatedPerson`, 
       fhirRelatedPersons, // 👈 Wrap in an object
       {
         headers: { "Content-Type": "application/json" },
@@ -78,7 +79,7 @@ export const createRelatedPersons = async (patientId: string, relatedPersons: Re
 // ✅ Fetch RelatedPersons by patient ID
 export const getRelatedPersonsByPatientId = async (patientId: string) => {
   try {
-    const response = await axios.get(`${API_URL}/relatedPerson/patient/${patientId}`);
+    const response = await axiosIns.get(`${API_URL}/relatedPerson/patient/${patientId}`);
     return response.data;
   } catch (error) {
     console.error("🚨 Error fetching related persons:", error);

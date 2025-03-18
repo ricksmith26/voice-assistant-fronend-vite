@@ -42,8 +42,6 @@ export const PatientForm = ({ email, setMode }: PatientFormProps) => {
     const submitPatient = async () => {
         let patientData = patient;
         patientData.Email = email;
-        localStorage.setItem('email', email)
-        console.log(patientData, email)
         try {
             const response = await createPatient(patientData)
             const id = response._id
@@ -62,16 +60,6 @@ export const PatientForm = ({ email, setMode }: PatientFormProps) => {
             console.log(error, "<<<<<<")
         }
     }
-
-
-    useEffect(() => {
-        console.log(currentPage)
-    }, [currentPage])
-
-    useEffect(( ) => {
-        console.log(email)
-    }, [email])
-
 
     return (
         <div className="patientFormBackground">

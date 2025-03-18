@@ -15,7 +15,6 @@ const Login = () => {
     const [play] = useSound('../assets/sounds/start_up.mp3');
 
     useEffect(() => {
-        console.log(localStorage.getItem('email'), '<<<<document.cookie<')
         setTimeout(() => {
             console.log('start music')
             play()
