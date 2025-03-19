@@ -71,10 +71,10 @@ export default function Winston({ mode, email }: any) {
       className="grid grid-rows-[2fr_1fr] items-center"
     >
       <SimpleVoiceAssistant onStateChange={setAgentState} />
-      <ControlBar
+      {/* <ControlBar
         onConnectButtonClicked={onConnectButtonClicked}
         agentState={agentState}
-      />
+      /> */}
       <RoomAudioRenderer />
       <NoAgentNotification state={agentState} />
     </LiveKitRoom>
