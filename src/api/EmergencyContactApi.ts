@@ -1,4 +1,3 @@
-import axios from "axios";
 import axiosIns from "../providers/axiosIns";
 
 const API_URL = import.meta.env.API_URL;

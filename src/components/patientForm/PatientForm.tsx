@@ -1,7 +1,7 @@
 // import Button from "../Button/Button"
 import './patientForm.css'
 import { PersonalDetails } from "./patientFormComponents/PersonalDetails"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { EmergencyContacts } from "./patientFormComponents/EmergencyContacts"
 import { FormTitle } from "./patientFormComponents/FormTitle"
 import { createPatient } from "../../api/PatientApi"

@@ -1,4 +1,3 @@
-import axios from "axios";
 import axiosIns from "../providers/axiosIns";
 
 const VITE_API_URL  = import.meta.env.API_URL; // Ensure your API URL is set in env variables
