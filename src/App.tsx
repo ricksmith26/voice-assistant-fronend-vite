@@ -18,7 +18,6 @@ import { getPatient } from './api/PatientApi';
 import { WebRTC } from './components/WebRTC/WebRTC';
 import { User } from './types/User';
 import { ModesEnum } from './types/Modes';
-import { useParams } from "react-router"
 import { AxiosProvider } from './providers/axiosProvider';
 
 

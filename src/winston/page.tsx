@@ -1,20 +1,16 @@
-import { AnimatePresence, motion } from "framer-motion";
 import {
   LiveKitRoom,
   useVoiceAssistant,
   BarVisualizer,
   RoomAudioRenderer,
-  VoiceAssistantControlBar,
   AgentState,
-  DisconnectButton,
-  // VideoConference
 } from "@livekit/components-react";
 import { useCallback, useEffect, useState } from "react";
 import { MediaDeviceFailure} from "livekit-client";
 // import { useRoomContext } from "@livekit/components-react";
 import { NoAgentNotification } from "../components/NoAgentNotification";
-import { CloseIcon } from "../components/CloseIcon";
-import { useKrispNoiseFilter } from "@livekit/components-react/krisp";
+// import { CloseIcon } from "../components/CloseIcon";
+// import { useKrispNoiseFilter } from "@livekit/components-react/krisp";
 
 import "@livekit/components-styles";
 
