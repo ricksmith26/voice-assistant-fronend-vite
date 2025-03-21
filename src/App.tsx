@@ -3,22 +3,22 @@ import { useCallback, useEffect, useState } from 'react'
 import './App.css'
 import {} from 'react-dom'
 // import useSound from 'use-sound';
-import Winston from './winston/page'
+import Winston from './winston/page.js'
 import useSpeechToText from 'react-hook-speech-to-text';
-import Carousel from './components/Carousel/Carousel';
-import Login from './login/Login';
-import socket from './socket';
-import { PatientForm } from './components/patientForm/PatientForm';
-import { checkAuth } from './api/AuthApi';
-import { contactRequest } from './api/ContactApi';
-import { getImagesRequest } from './api/imageApi';
-import { getPatient } from './api/PatientApi';
+import Carousel from './components/Carousel/Carousel.js';
+import Login from './login/Login.js';
+import socket from './socket.js';
+import { PatientForm } from './components/patientForm/PatientForm.js';
+import { checkAuth } from './api/AuthApi.js';
+import { contactRequest } from './api/ContactApi.js';
+import { getImagesRequest } from './api/imageApi.js';
+import { getPatient } from './api/PatientApi.js';
 // import Button from './components/Button/Button';
 // import mySound from "./assets/sounds/start_up.mp3";
-import { WebRTC } from './components/WebRTC/WebRTC';
-import { User } from './types/User';
-import { ModesEnum } from './types/Modes';
-import { AxiosProvider } from './providers/axiosProvider';
+import { WebRTC } from './components/WebRTC/WebRTC.js';
+import { User } from './types/User.js';
+import { ModesEnum } from './types/Modes.js';
+import { AxiosProvider } from './providers/axiosProvider.js';
 
 
 function App() {
